@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>D-MART v13 Ultra Pro ERP & POS</title>
+    <title>D-MART Enterprise Ultimate ERP & POS v15.0</title>
     
     <script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2/dist/quagga.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -12,112 +12,103 @@
     
     <style>
         :root {
-            --primary: #4f46e5;
-            --primary-dark: #3730a3;
+            --primary: #3b82f6;
+            --primary-dark: #1d4ed8;
             --success: #10b981;
             --warning: #f59e0b;
             --danger: #ef4444;
             --info: #06b6d4;
             --dark-bg: #0f172a;
             --card-bg: #ffffff;
-            --app-bg: #f8fafc;
-            --text-main: #1e293b;
+            --app-bg: #f1f5f9;
+            --text-main: #0f172a;
             --text-muted: #64748b;
-            --border: #e2e8f0;
+            --border: #cbd5e1;
         }
 
         * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--app-bg); color: var(--text-main); min-height: 100vh; padding-bottom: 80px; }
+        body { background-color: var(--app-bg); color: var(--text-main); min-height: 100vh; padding-bottom: 75px; }
 
-        /* Top Header */
         .app-header {
-            background: linear-gradient(135deg, #0f172a, #1e1b4b); color: #fff;
+            background: linear-gradient(135deg, #0f172a, #1e293b); color: #fff;
             padding: 12px 16px; display: flex; justify-content: space-between; align-items: center;
-            position: sticky; top: 0; z-index: 500; box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            position: sticky; top: 0; z-index: 500; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
-        .app-brand { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 16px; color: #a5b4fc; }
+        .app-brand { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 15px; color: #38bdf8; }
         .header-controls { display: flex; align-items: center; gap: 8px; }
-        .lang-select { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); color: #fff; padding: 5px 8px; border-radius: 8px; font-size: 11px; outline: none; }
+        .lang-select { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); color: #fff; padding: 4px 8px; border-radius: 8px; font-size: 11px; outline: none; }
         .lang-select option { color: #000; }
 
-        /* Main Grid Menu (12 Modules) */
-        .modules-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
+        .modules-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; }
         @media (min-width: 600px) { .modules-grid { grid-template-columns: repeat(4, 1fr); } }
 
         .module-btn {
-            background: #ffffff; border: 1px solid var(--border); border-radius: 14px; padding: 12px 8px;
+            background: #ffffff; border: 1px solid var(--border); border-radius: 14px; padding: 12px 6px;
             text-align: center; cursor: pointer; transition: all 0.2s ease; display: flex; flex-direction: column;
-            align-items: center; gap: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            align-items: center; gap: 5px; box-shadow: 0 2px 6px rgba(0,0,0,0.02);
         }
         .module-btn:active { transform: scale(0.96); }
-        .module-btn i { font-size: 22px; }
-        .module-btn p { font-size: 11px; font-weight: 700; color: var(--text-main); }
+        .module-btn i { font-size: 20px; }
+        .module-btn p { font-size: 10px; font-weight: 700; color: var(--text-main); }
 
-        /* Container & Cards */
         .container { padding: 12px; max-width: 900px; margin: 0 auto; }
         .tab-content { display: none; animation: fadeIn 0.2s ease-in-out; }
         .tab-content.active { display: block; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
-        .card { background: var(--card-bg); border-radius: 16px; padding: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid var(--border); margin-bottom: 12px; }
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .card-title { font-size: 14px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+        .card { background: var(--card-bg); border-radius: 16px; padding: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid var(--border); margin-bottom: 12px; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .card-title { font-size: 13px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
 
-        /* Inputs & Buttons */
         .form-control { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; font-size: 12px; margin-bottom: 8px; outline: none; }
-        .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
+        .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
 
-        .btn { width: 100%; padding: 11px; border: none; border-radius: 10px; font-weight: 700; font-size: 12px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 6px; }
+        .btn { width: 100%; padding: 10px; border: none; border-radius: 10px; font-weight: 700; font-size: 12px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 6px; }
         .btn-primary { background: var(--primary); color: #fff; }
         .btn-success { background: var(--success); color: #fff; }
         .btn-warning { background: var(--warning); color: #fff; }
         .btn-danger { background: var(--danger); color: #fff; }
-        .btn-info { background: var(--info); color: #fff; }
 
-        /* Dashboard Alert Cards */
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
-        .stat-card { padding: 14px; border-radius: 14px; background: #fff; border: 1px solid var(--border); text-align: center; }
+        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px; }
+        .stat-card { padding: 12px; border-radius: 12px; background: #fff; border: 1px solid var(--border); text-align: center; }
         .stat-card.warning { border-top: 4px solid var(--warning); }
         .stat-card.danger { border-top: 4px solid var(--danger); }
+        .stat-card.success { border-top: 4px solid var(--success); }
         .stat-card h5 { font-size: 10px; color: var(--text-muted); margin-bottom: 4px; }
-        .stat-card .val { font-size: 20px; font-weight: 800; }
+        .stat-card .val { font-size: 18px; font-weight: 800; }
 
-        /* Table Design */
         .table-responsive { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); }
         table { width: 100%; border-collapse: collapse; background: #fff; font-size: 11px; }
-        th, td { padding: 8px 10px; border-bottom: 1px solid var(--border); text-align: right; }
-        th { background: #f1f5f9; font-weight: 700; color: var(--text-muted); }
+        th, td { padding: 8px; border-bottom: 1px solid var(--border); text-align: right; }
+        th { background: #f8fafc; font-weight: 700; color: var(--text-muted); }
 
-        /* Bottom Mobile Navigation Bar */
         .bottom-nav {
             position: fixed; bottom: 0; left: 0; right: 0; background: #ffffff;
             display: flex; justify-content: space-around; align-items: center;
             height: 60px; border-top: 1px solid var(--border); z-index: 1000;
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
         }
         .nav-tab {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             color: var(--text-muted); text-decoration: none; font-size: 10px; font-weight: 700; width: 20%; height: 100%;
         }
-        .nav-tab i { font-size: 18px; margin-bottom: 2px; }
+        .nav-tab i { font-size: 17px; margin-bottom: 2px; }
         .nav-tab.active { color: var(--primary); }
 
-        /* Print Style */
+        /* Printable Receipt Styles (Thermal 80mm) */
         @media print {
             body * { visibility: hidden; }
-            .print-area, .print-area * { visibility: visible; }
-            .print-area { position: absolute; left: 0; top: 0; width: 100%; }
+            #printableInvoice, #printableInvoice * { visibility: visible; }
+            #printableInvoice { position: absolute; left: 0; top: 0; width: 80mm; background: #fff; padding: 2mm; font-size: 10px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- App Header -->
     <header class="app-header">
-        <div class="app-brand"><i class="fa-solid fa-cart-flatbed-suitcases"></i> D-MART v13</div>
+        <div class="app-brand"><i class="fa-solid fa-shop"></i> D-MART v15.0 ERP</div>
         <div class="header-controls">
-            <span style="font-size: 11px; opacity: 0.9;">👤 مدير</span>
+            <span style="font-size: 11px; opacity: 0.9;" id="roleDisp">مدیر (Admin)</span>
             <select class="lang-select" id="langSelector" onchange="changeLanguage(this.value)">
                 <option value="ps">پښتو</option>
                 <option value="ar">العربية</option>
@@ -126,39 +117,34 @@
         </div>
     </header>
 
-    <!-- Main Container -->
     <div class="container">
         
         <!-- 1. DASHBOARD -->
         <div id="dashboardTab" class="tab-content active">
             <div class="stats-grid">
                 <div class="stat-card warning">
-                    <h5 data-i18n="dashLow">کم موجودي توکي</h5>
+                    <h5>کم موجودي توکي</h5>
                     <div class="val" id="dashLowStockCount" style="color: var(--warning);">0</div>
                 </div>
                 <div class="stat-card danger">
-                    <h5 data-i18n="dashExp">تاریخ تېر / نږدې توکي</h5>
+                    <h5>تاریخ تېر توکي</h5>
                     <div class="val" id="dashExpiredCount" style="color: var(--danger);">0</div>
                 </div>
             </div>
 
-            <!-- 12 Key Modules Buttons -->
             <div class="card">
-                <div class="card-title" style="margin-bottom: 12px;"><i class="fa-solid fa-cubes" style="color:var(--primary);"></i> <span>د سیستم ۱۲ بټنې (Modules)</span></div>
-                
+                <div class="card-title" style="margin-bottom: 12px;"><i class="fa-solid fa-grid-2" style="color:var(--primary);"></i> <span>اصلي ماډولونه</span></div>
                 <div class="modules-grid">
-                    <div class="module-btn" onclick="showTab('dashboardTab')"><i class="fa-solid fa-chart-line" style="color:#6366f1;"></i><p>۱. ډېشبورډ</p></div>
-                    <div class="module-btn" onclick="showTab('posTab')"><i class="fa-solid fa-cash-register" style="color:#10b981;"></i><p>۲. پلور (POS)</p></div>
-                    <div class="module-btn" onclick="showTab('inventoryTab')"><i class="fa-solid fa-boxes-stacked" style="color:#f59e0b;"></i><p>۳. انبار</p></div>
-                    <div class="module-btn" onclick="showTab('suppliersTab')"><i class="fa-solid fa-truck" style="color:#06b6d4;"></i><p>۴. سپلائران</p></div>
-                    <div class="module-btn" onclick="showTab('customersTab')"><i class="fa-solid fa-users" style="color:#ec4899;"></i><p>۵. مشتریان</p></div>
-                    <div class="module-btn" onclick="showTab('reportsTab')"><i class="fa-solid fa-file-invoice-dollar" style="color:#8b5cf6;"></i><p>۶. راپورونه</p></div>
-                    <div class="module-btn" onclick="showTab('shiftTab')"><i class="fa-solid fa-clock-rotate-left" style="color:#14b8a6;"></i><p>۷. کاری شفټ</p></div>
-                    <div class="module-btn" onclick="showTab('employeesTab')"><i class="fa-solid fa-user-gear" style="color:#f97316;"></i><p>۸. کارمندان</p></div>
-                    <div class="module-btn" onclick="showTab('barcodeTab')"><i class="fa-solid fa-barcode" style="color:#3b82f6;"></i><p>۹. بارکوډونه</p></div>
-                    <div class="module-btn" onclick="showTab('shelfTagsTab')"><i class="fa-solid fa-tags" style="color:#84cc16;"></i><p>۱۰. د طاقچې ټګ</p></div>
-                    <div class="module-btn" onclick="showTab('expensesTab')"><i class="fa-solid fa-wallet" style="color:#ef4444;"></i><p>۱۱. مصارف</p></div>
-                    <div class="module-btn" onclick="showTab('settingsTab')"><i class="fa-solid fa-sliders" style="color:#64748b;"></i><p>۱۲. ترتیبات</p></div>
+                    <div class="module-btn" onclick="showTab('dashboardTab')"><i class="fa-solid fa-chart-line" style="color:#6366f1;"></i><p>ډېشبورډ</p></div>
+                    <div class="module-btn" onclick="showTab('posTab')"><i class="fa-solid fa-cash-register" style="color:#10b981;"></i><p>پلور (POS)</p></div>
+                    <div class="module-btn" onclick="showTab('inventoryTab')"><i class="fa-solid fa-boxes-stacked" style="color:#f59e0b;"></i><p>انبار او کارتنو</p></div>
+                    <div class="module-btn" onclick="showTab('suppliersTab')"><i class="fa-solid fa-truck" style="color:#06b6d4;"></i><p>سپلائران</p></div>
+                    <div class="module-btn" onclick="showTab('customersTab')"><i class="fa-solid fa-users" style="color:#ec4899;"></i><p>مشتریان</p></div>
+                    <div class="module-btn" onclick="showTab('reportsTab')"><i class="fa-solid fa-file-invoice-dollar" style="color:#8b5cf6;"></i><p>مالي راپورونه</p></div>
+                    <div class="module-btn" onclick="showTab('shiftTab')"><i class="fa-solid fa-clock-rotate-left" style="color:#14b8a6;"></i><p>کاري شفټ</p></div>
+                    <div class="module-btn" onclick="showTab('employeesTab')"><i class="fa-solid fa-user-gear" style="color:#f97316;"></i><p>کارمندان</p></div>
+                    <div class="module-btn" onclick="showTab('expensesTab')"><i class="fa-solid fa-wallet" style="color:#ef4444;"></i><p>مصارف</p></div>
+                    <div class="module-btn" onclick="showTab('backupTab')"><i class="fa-solid fa-database" style="color:#3b82f6;"></i><p>بیک اپ/ډېټا</p></div>
                 </div>
             </div>
         </div>
@@ -166,41 +152,45 @@
         <!-- 2. POS TERMINAL -->
         <div id="posTab" class="tab-content">
             <div class="card">
-                <div class="card-header">
-                    <div class="card-title"><i class="fa-solid fa-cart-shopping"></i> <span>د پلور ټرمينل (POS)</span></div>
-                </div>
+                <div class="card-title" style="margin-bottom:8px;"><i class="fa-solid fa-cart-shopping"></i> <span>د پلور ټرمينل (POS)</span></div>
                 <input type="text" id="barcodeInput" class="form-control" placeholder="بارکوډ سکین کړئ..." onkeypress="handleBarcodeInput(event)" autofocus>
+                
                 <div class="table-responsive">
                     <table>
                         <thead><tr><th>جنس</th><th>قیمت</th><th>تعداد</th><th>جمله</th><th>#</th></tr></thead>
                         <tbody id="cartTable"></tbody>
                     </table>
                 </div>
-                <div style="margin-top: 10px; display: flex; justify-content: space-between; font-weight: 800; font-size: 15px;">
+
+                <div style="margin-top: 10px; display: flex; justify-content: space-between; font-weight: 800; font-size: 14px;">
                     <span>ټولټال (VAT 15%):</span>
                     <span id="grandTotal" style="color: var(--success);">0.00 SAR</span>
                 </div>
-                <button class="btn btn-success" style="margin-top:10px;" onclick="printReceipt()"><i class="fa-solid fa-print"></i> بل خلاص کړه</button>
+
+                <button class="btn btn-success" style="margin-top:10px;" onclick="printReceipt()"><i class="fa-solid fa-print"></i> بل خلاص او چاپ کړه</button>
             </div>
         </div>
 
-        <!-- 3. INVENTORY -->
+        <!-- 3. INVENTORY & BULK STOCK -->
         <div id="inventoryTab" class="tab-content">
             <div class="card">
-                <div class="card-title"><i class="fa-solid fa-boxes-stacked"></i> <span>د انبار لیست</span></div>
+                <div class="card-title"><i class="fa-solid fa-boxes-stacked"></i> <span>د انبار، کارټنو او د دانې حساب</span></div>
                 <div style="margin-top:10px; display:grid; grid-template-columns: 1fr 1fr; gap:6px;">
                     <input type="text" id="newProdBarcode" class="form-control" placeholder="بارکوډ">
-                    <input type="text" id="newProdName" class="form-control" placeholder="جنس نوم">
-                    <input type="number" id="newProdPrice" class="form-control" placeholder="قیمت">
-                    <input type="number" id="newProdStock" class="form-control" placeholder="تعداد">
+                    <input type="text" id="newProdName" class="form-control" placeholder="د جنس نوم">
+                    <input type="number" id="newProdCost" class="form-control" placeholder="اخستلو قیمت (Cost)">
+                    <input type="number" id="newProdPrice" class="form-control" placeholder="پلورلو قیمت (Price)">
+                    <input type="number" id="newProdStock" class="form-control" placeholder="تعداد (داني)">
+                    <input type="number" id="newProdCartonStock" class="form-control" placeholder="تعداد (کارټن)">
                     <input type="date" id="newProdExpiry" class="form-control" style="grid-column: span 2;">
-                    <button class="btn btn-success" style="grid-column: span 2;" onclick="addNewProduct()"><i class="fa-solid fa-plus"></i> ثبت</button>
+                    <button class="btn btn-success" style="grid-column: span 2;" onclick="addNewProduct()"><i class="fa-solid fa-plus"></i> انبار ته جنس زیات کړه</button>
                 </div>
             </div>
+
             <div class="card">
                 <div class="table-responsive">
                     <table>
-                        <thead><tr><th>بارکوډ</th><th>نوم</th><th>قیمت</th><th>تعداد</th><th>تاریخ ختمېدو</th></tr></thead>
+                        <thead><tr><th>بارکوډ</th><th>نوم</th><th>خرید/پلور</th><th>داني</th><th>کارټن</th><th>ختمېدو نېټه</th></tr></thead>
                         <tbody id="inventoryTable"></tbody>
                     </table>
                 </div>
@@ -210,20 +200,16 @@
         <!-- 4. SUPPLIERS -->
         <div id="suppliersTab" class="tab-content">
             <div class="card">
-                <div class="card-title"><i class="fa-solid fa-truck"></i> <span>د سپلائرانو مدیریت</span></div>
+                <div class="card-title"><i class="fa-solid fa-truck"></i> <span>د سپلائرانو مدیریت او حسابونه</span></div>
                 <div style="margin-top:10px;">
                     <input type="text" id="supCompany" class="form-control" placeholder="د شرکت نوم">
                     <input type="text" id="supName" class="form-control" placeholder="د سپلائر نوم">
-                    <input type="text" id="supPhone" class="form-control" placeholder="تیلیفون شمیره">
-                    <input type="number" id="supBalance" class="form-control" placeholder="پور (SAR)">
+                    <input type="text" id="supPhone" class="form-control" placeholder="تیلیفون">
+                    <input type="number" id="supBalance" class="form-control" placeholder="پور / باقیات (SAR)">
                     <button class="btn btn-primary" onclick="addSupplier()"><i class="fa-solid fa-plus"></i> ثبت کړه</button>
                 </div>
             </div>
-            <div class="card" id="supplierTableArea">
-                <div class="card-header">
-                    <div class="card-title">د سپلائرانو لیست</div>
-                    <button class="btn btn-primary" style="width:auto; padding:4px 8px; font-size:11px;" onclick="window.print()">🖨️ پرنټ</button>
-                </div>
+            <div class="card">
                 <div class="table-responsive">
                     <table>
                         <thead><tr><th>شرکت</th><th>سپلائر</th><th>شمېره</th><th>پور</th><th>عملیه</th></tr></thead>
@@ -236,10 +222,10 @@
         <!-- 5. CUSTOMERS -->
         <div id="customersTab" class="tab-content">
             <div class="card">
-                <div class="card-title"><i class="fa-solid fa-users"></i> <span>د مشتریانو او پواینټونو لیست</span></div>
+                <div class="card-title"><i class="fa-solid fa-users"></i> <span>د مشتریانو حساب او پواینټونه</span></div>
                 <input type="text" id="custName" class="form-control" placeholder="د مشتری نوم" style="margin-top:10px;">
                 <input type="text" id="custPhone" class="form-control" placeholder="تیلیفون">
-                <button class="btn btn-primary" onclick="addCustomer()"><i class="fa-solid fa-plus"></i> مشتری ثبت کړه</button>
+                <button class="btn btn-primary" onclick="addCustomer()"><i class="fa-solid fa-plus"></i> ثبت کړه</button>
             </div>
             <div class="card">
                 <div class="table-responsive">
@@ -251,21 +237,21 @@
             </div>
         </div>
 
-        <!-- 6. REPORTS -->
+        <!-- 6. REPORTS & PROFIT/LOSS -->
         <div id="reportsTab" class="tab-content">
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title"><i class="fa-solid fa-file-invoice-dollar"></i> <span>مالي راپورونه</span></div>
-                    <button class="btn btn-success" style="width:auto; padding:4px 8px; font-size:11px;" onclick="exportToCSV()">اکسل</button>
+                    <div class="card-title"><i class="fa-solid fa-file-invoice-dollar"></i> <span>مالي او د ګټې/تاوان راپورونه</span></div>
+                    <button class="btn btn-success" style="width:auto; padding:4px 8px; font-size:10px;" onclick="exportToCSV()">اکسل</button>
                 </div>
                 <div class="stats-grid">
-                    <div class="stat-card" style="border-top: 4px solid var(--primary);">
+                    <div class="stat-card success">
                         <h5>ټول پلور</h5>
-                        <div class="val" id="repTotalSales" style="color:var(--primary);">0.00 SAR</div>
+                        <div class="val" id="repTotalSales" style="color:var(--success);">0.00 SAR</div>
                     </div>
-                    <div class="stat-card" style="border-top: 4px solid #b45309;">
-                        <h5>واجب زکات (2.5%)</h5>
-                        <div class="val" id="repZakat" style="color:#b45309;">0.00 SAR</div>
+                    <div class="stat-card warning">
+                        <h5>خالصه تخمیني ګټه</h5>
+                        <div class="val" id="repNetProfit" style="color:var(--warning);">0.00 SAR</div>
                     </div>
                 </div>
             </div>
@@ -276,67 +262,61 @@
             <div class="card">
                 <div class="card-title"><i class="fa-solid fa-clock-rotate-left"></i> <span>د کاری شفټ مدیریت</span></div>
                 <input type="number" id="shiftCash" class="form-control" placeholder="د شفټ پیل نغدې (SAR)" style="margin-top:10px;">
-                <button class="btn btn-warning" onclick="alert('شفټ خلاص شو!')">شفټ خلاص کړه</button>
+                <button class="btn btn-warning" onclick="alert('شفټ په بریا سره خلاص شو!')">شفټ خلاص کړه</button>
             </div>
         </div>
 
-        <!-- 8. EMPLOYEES -->
+        <!-- 8. EMPLOYEES & ROLES -->
         <div id="employeesTab" class="tab-content">
             <div class="card">
-                <div class="card-title"><i class="fa-solid fa-user-gear"></i> <span>د کارمندانو اداره</span></div>
+                <div class="card-title"><i class="fa-solid fa-user-gear"></i> <span>د کارمندانو واکونه او رولونه</span></div>
                 <input type="text" id="empName" class="form-control" placeholder="نوم" style="margin-top:10px;">
+                <select id="empRole" class="form-control">
+                    <option value="cashier">کاشېر (Cashier)</option>
+                    <option value="admin">مدیر (Admin)</option>
+                </select>
                 <input type="password" id="empPass" class="form-control" placeholder="رمز">
                 <button class="btn btn-primary" onclick="alert('کارمند اضافه شو!')">اضافه کړه</button>
             </div>
         </div>
 
-        <!-- 9. BARCODE GENERATOR -->
-        <div id="barcodeTab" class="tab-content">
-            <div class="card">
-                <div class="card-title"><i class="fa-solid fa-barcode"></i> <span>د بارکوډونو پرنټ کول</span></div>
-                <input type="text" id="bcVal" class="form-control" placeholder="بارکوډ ولیکئ..." style="margin-top:10px;">
-                <button class="btn btn-info" onclick="generateBarcode()"><i class="fa-solid fa-gear"></i> بارکوډ جوړ کړه</button>
-                <div style="text-align:center; margin-top:15px;" class="print-area">
-                    <svg id="barcodeSvg"></svg>
-                </div>
-            </div>
-        </div>
-
-        <!-- 10. SHELF TAGS -->
-        <div id="shelfTagsTab" class="tab-content">
-            <div class="card print-area">
-                <div class="card-title"><i class="fa-solid fa-tags"></i> <span>د شلف او طاقچې ټګ</span></div>
-                <div style="border:2px dashed var(--primary); padding:15px; border-radius:12px; text-align:center; margin-top:10px;">
-                    <h2 id="tagProdName">کوکا کولا 1.5L</h2>
-                    <h1 style="color:var(--danger); font-size:28px;">23.00 SAR</h1>
-                    <p style="font-size:10px; color:var(--text-muted);">شامل الضريبة 15% VAT</p>
-                </div>
-                <button class="btn btn-primary" style="margin-top:10px;" onclick="window.print()">🖨️ ټګ پرنټ کړه</button>
-            </div>
-        </div>
-
-        <!-- 11. EXPENSES -->
+        <!-- 9. EXPENSES -->
         <div id="expensesTab" class="tab-content">
             <div class="card">
-                <div class="card-title"><i class="fa-solid fa-wallet"></i> <span>د روزمره مصارفو ثبتول</span></div>
-                <input type="text" id="expDesc" class="form-control" placeholder="د مصرف تفصیل (لکه برق/کرایه)" style="margin-top:10px;">
-                <input type="number" id="expAmt" class="form-control" placeholder="کچه (SAR)">
-                <button class="btn btn-danger" onclick="alert('مصرف ثبت شو!')">ثبت</button>
+                <div class="card-title"><i class="fa-solid fa-wallet"></i> <span>روزمره مصارف</span></div>
+                <input type="text" id="expDesc" class="form-control" placeholder="مصرف تفصیل" style="margin-top:10px;">
+                <input type="number" id="expAmt" class="form-control" placeholder="مبلغ (SAR)">
+                <button class="btn btn-danger" onclick="alert('مصرف ثبت شو!')">ثبت کړه</button>
             </div>
         </div>
 
-        <!-- 12. SETTINGS -->
-        <div id="settingsTab" class="tab-content">
+        <!-- 10. BACKUP & DATA -->
+        <div id="backupTab" class="tab-content">
             <div class="card">
-                <div class="card-title"><i class="fa-solid fa-sliders"></i> <span>د سیستم ترتیبات</span></div>
-                <p style="font-size:11px; margin-top:10px;">د سیستم نسخه: v13.0 Ultra Pro UI</p>
-                <button class="btn btn-warning" style="margin-top:10px;" onclick="localStorage.clear(); location.reload();">د ټولو ډېټا پاکول (Reset Data)</button>
+                <div class="card-title"><i class="fa-solid fa-database"></i> <span>د ډېټابیس او راپورونو بیک اپ</span></div>
+                <button class="btn btn-primary" style="margin-top:10px;" onclick="downloadBackup()"><i class="fa-solid fa-download"></i> د سیستم د کلي ډېټا بیک اپ ډانلوډ کړه (JSON)</button>
+                <button class="btn btn-danger" style="margin-top:10px;" onclick="localStorage.clear(); location.reload();">د ډېټابیس ریستول (Reset Database)</button>
             </div>
         </div>
 
     </div>
 
-    <!-- Bottom Navigation Bar -->
+    <!-- Hidden Thermal Receipt HTML Structure -->
+    <div id="printableInvoice" style="display:none;">
+        <div style="text-align:center;">
+            <h3>D-MART SUPERMARKET</h3>
+            <p>VAT No: 310596981900003</p>
+            <hr style="margin:5px 0;">
+            <p>Simplifed Tax Invoice / فاتورة ضريبية</p>
+        </div>
+        <div id="invoiceContent" style="margin-top:8px;"></div>
+        <hr style="margin:5px 0;">
+        <div style="text-align:center;">
+            <p>مننې / شكراً لزيارتكم</p>
+        </div>
+    </div>
+
+    <!-- Bottom Nav -->
     <nav class="bottom-nav">
         <a class="nav-tab active" onclick="showTab('dashboardTab')"><i class="fa-solid fa-house"></i><span>کورپاڼه</span></a>
         <a class="nav-tab" onclick="showTab('posTab')"><i class="fa-solid fa-cart-shopping"></i><span>پلور</span></a>
@@ -349,8 +329,8 @@
     let suppliers = JSON.parse(localStorage.getItem('pos_suppliers')) || [{ id: "1", company: "Almarai / المراعي", name: "احمد علي", phone: "0500000000", balance: 1500.00 }];
     let customers = JSON.parse(localStorage.getItem('pos_customers')) || [{ name: "عمر خان", phone: "0555555555", points: 120 }];
     let dbProducts = JSON.parse(localStorage.getItem('pos_products')) || [
-        { id: "101", name: "کوکا کولا 1.5L", price: 23.0, stock: 3, expiry: "2025-01-01" },
-        { id: "102", name: "شېدې 1L", price: 11.0, stock: 15, expiry: "2028-06-01" }
+        { id: "101", name: "کوکا کولا 1.5L", cost: 18.0, price: 23.0, stock: 12, cartonStock: 1, expiry: "2025-01-01" },
+        { id: "102", name: "شېدې 1L", cost: 8.5, price: 11.0, stock: 15, cartonStock: 2, expiry: "2028-06-01" }
     ];
     let salesHistory = JSON.parse(localStorage.getItem('pos_sales')) || [];
     let cart = [];
@@ -388,56 +368,31 @@
 
     function renderSuppliers() {
         let tbody = document.getElementById('supplierTable');
-        if(!tbody) return;
-        tbody.innerHTML = '';
-        suppliers.forEach((s, idx) => {
-            let waLink = s.phone !== '-' ? `https://wa.me/${s.phone.replace(/[^0-9]/g, '')}` : '#';
-            tbody.innerHTML += `
-                <tr>
-                    <td><b>${s.company}</b></td><td>${s.name}</td><td>${s.phone}</td>
-                    <td><b style="color:var(--danger);">${s.balance.toFixed(2)} SAR</b></td>
-                    <td><a href="${waLink}" target="_blank" style="background:#25d366; color:#fff; padding:2px 6px; border-radius:4px; text-decoration:none;">💬</a></td>
-                </tr>
-            `;
-        });
-    }
-
-    function addCustomer() {
-        let name = document.getElementById('custName').value.trim();
-        let phone = document.getElementById('custPhone').value.trim();
-        if(!name) return alert("نوم ولیکئ!");
-        customers.push({ name, phone: phone || '-', points: 0 });
-        localStorage.setItem('pos_customers', JSON.stringify(customers));
-        renderCustomers();
-    }
-
-    function renderCustomers() {
-        let tbody = document.getElementById('customerTable');
-        if(!tbody) return;
-        tbody.innerHTML = '';
-        customers.forEach(c => {
-            tbody.innerHTML += `<tr><td>${c.name}</td><td>${c.phone}</td><td><b>${c.points}</b></td></tr>`;
+        if(!tbody) return; tbody.innerHTML = '';
+        suppliers.forEach((s) => {
+            tbody.innerHTML += `<tr><td><b>${s.company}</b></td><td>${s.name}</td><td>${s.phone}</td><td><b style="color:var(--danger);">${s.balance.toFixed(2)} SAR</b></td><td><a href="https://wa.me/${s.phone.replace(/[^0-9]/g, '')}" target="_blank">💬</a></td></tr>`;
         });
     }
 
     function addNewProduct() {
         let id = document.getElementById('newProdBarcode').value.trim();
         let name = document.getElementById('newProdName').value.trim();
+        let cost = parseFloat(document.getElementById('newProdCost').value) || 0;
         let price = parseFloat(document.getElementById('newProdPrice').value) || 0;
         let stock = parseInt(document.getElementById('newProdStock').value) || 0;
+        let cartonStock = parseInt(document.getElementById('newProdCartonStock').value) || 0;
         let expiry = document.getElementById('newProdExpiry').value;
         if(!id || !name) return alert("معلومات ولیکئ!");
-        dbProducts.push({ id, name, price, stock, expiry: expiry || "2028-01-01" });
+        dbProducts.push({ id, name, cost, price, stock, cartonStock, expiry: expiry || "2028-01-01" });
         localStorage.setItem('pos_products', JSON.stringify(dbProducts));
         renderInventory(); checkStockAlerts();
     }
 
     function renderInventory() {
         let tbody = document.getElementById('inventoryTable');
-        if(!tbody) return;
-        tbody.innerHTML = '';
+        if(!tbody) return; tbody.innerHTML = '';
         dbProducts.forEach(p => {
-            tbody.innerHTML += `<tr><td>${p.id}</td><td>${p.name}</td><td>${p.price}</td><td><b>${p.stock}</b></td><td>${p.expiry || '-'}</td></tr>`;
+            tbody.innerHTML += `<tr><td>${p.id}</td><td>${p.name}</td><td>${p.cost || 0} / ${p.price}</td><td><b>${p.stock}</b></td><td><b>${p.cartonStock || 0}</b></td><td>${p.expiry || '-'}</td></tr>`;
         });
     }
 
@@ -456,8 +411,7 @@
 
     function renderCart() {
         let tbody = document.getElementById('cartTable');
-        if(!tbody) return;
-        tbody.innerHTML = '';
+        if(!tbody) return; tbody.innerHTML = '';
         let subtotal = 0;
         cart.forEach((i, idx) => {
             subtotal += i.price * i.qty;
@@ -470,8 +424,9 @@
     function printReceipt() {
         if(cart.length === 0) return alert("کارت تش دی!");
         let subtotal = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+        let totalCost = cart.reduce((sum, i) => sum + ((i.cost || 0) * i.qty), 0);
         let finalTotal = subtotal + (subtotal * 0.15);
-        salesHistory.push({ total: finalTotal, date: new Date().toLocaleString() });
+        salesHistory.push({ total: finalTotal, profit: (subtotal - totalCost), date: new Date().toLocaleString() });
         localStorage.setItem('pos_sales', JSON.stringify(salesHistory));
         alert("بل خلاص شو! ټولټال: " + finalTotal.toFixed(2) + " SAR");
         cart = []; renderCart(); loadReports();
@@ -479,13 +434,17 @@
 
     function loadReports() {
         let totalSales = salesHistory.reduce((s, a) => s + a.total, 0);
+        let totalProfit = salesHistory.reduce((s, a) => s + (a.profit || 0), 0);
         document.getElementById('repTotalSales').innerText = totalSales.toFixed(2) + ' SAR';
-        document.getElementById('repZakat').innerText = (totalSales * 0.025).toFixed(2) + ' SAR';
+        document.getElementById('repNetProfit').innerText = totalProfit.toFixed(2) + ' SAR';
     }
 
-    function generateBarcode() {
-        let val = document.getElementById('bcVal').value || "123456789";
-        JsBarcode("#barcodeSvg", val, { format: "CODE128", width: 2, height: 50 });
+    function downloadBackup() {
+        let backupData = { products: dbProducts, suppliers: suppliers, customers: customers, sales: salesHistory };
+        let blob = new Blob([JSON.stringify(backupData)], { type: 'application/json' });
+        let link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `DMART_Backup_${Date.now()}.json`; link.click();
     }
 
     function exportToCSV() {
@@ -496,6 +455,23 @@
         let link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
         link.download = `Report.csv`; link.click();
+    }
+
+    function addCustomer() {
+        let name = document.getElementById('custName').value.trim();
+        let phone = document.getElementById('custPhone').value.trim();
+        if(!name) return alert("نوم ولیکئ!");
+        customers.push({ name, phone: phone || '-', points: 0 });
+        localStorage.setItem('pos_customers', JSON.stringify(customers));
+        renderCustomers();
+    }
+
+    function renderCustomers() {
+        let tbody = document.getElementById('customerTable');
+        if(!tbody) return; tbody.innerHTML = '';
+        customers.forEach(c => {
+            tbody.innerHTML += `<tr><td>${c.name}</td><td>${c.phone}</td><td><b>${c.points}</b></td></tr>`;
+        });
     }
 
     renderSuppliers();
