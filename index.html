@@ -2,378 +2,361 @@
 <html lang="ps" dir="rtl" id="htmlRoot">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>د سوپرمارکیټ پرمختللی POS او ERP سیستم</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>D-MART ERP & Modern POS</title>
     
+    <!-- QuaggaJS Barcode & Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2/dist/quagga.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
     <style>
         :root {
-            --sidebar-bg: #1e3a8a;
-            --sidebar-hover: #1e40af;
-            --primary: #2563eb;
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
             --success: #10b981;
             --warning: #f59e0b;
             --danger: #ef4444;
-            --dark: #0f172a;
-            --bg-color: #f1f5f9;
+            --dark-bg: #0f172a;
             --card-bg: #ffffff;
-            --border-color: #cbd5e1;
+            --app-bg: #f8fafc;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
         }
 
-        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; }
-        body { background-color: var(--bg-color); color: var(--dark); display: flex; min-height: 100vh; }
+        * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--app-bg); color: var(--text-main); min-height: 100vh; padding-bottom: 75px; }
 
-        .login-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #0f172a; display: flex; justify-content: center; align-items: center; z-index: 2000;
+        /* Top Modern Header */
+        .app-header {
+            background: linear-gradient(135deg, #1e1b4b, #312e81); color: #fff;
+            padding: 12px 16px; display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 500; box-shadow: 0 4px 20px rgba(0,0,0,0.15);
         }
-        .login-box {
-            background: #fff; padding: 25px; border-radius: 16px; width: 90%; max-width: 360px; text-align: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        .app-brand { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 16px; letter-spacing: 0.5px; }
+        .header-controls { display: flex; align-items: center; gap: 10px; }
+        .lang-select { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); color: #fff; padding: 5px 8px; border-radius: 8px; font-size: 11px; outline: none; }
+        .lang-select option { color: #000; }
+
+        /* Bottom Mobile Navigation Bar */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; right: 0; background: #ffffff;
+            display: flex; justify-content: space-around; align-items: center;
+            height: 65px; border-top: 1px solid var(--border); z-index: 1000;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.06); backdrop-filter: blur(10px);
         }
-        .login-box h2 { margin-bottom: 15px; color: var(--sidebar-bg); font-size: 18px; }
-        .login-box input, .login-box select { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 14px; background: #fff; }
-
-        .sidebar {
-            width: 220px; background-color: var(--sidebar-bg); color: #fff; display: flex; flex-direction: column;
-            position: fixed; top: 0; height: 100%; overflow-y: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); z-index: 100;
+        .nav-tab {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: var(--text-muted); text-decoration: none; font-size: 10px; font-weight: 600;
+            width: 20%; height: 100%; transition: all 0.2s ease;
         }
-        body[dir="rtl"] .sidebar { right: 0; box-shadow: -4px 0 10px rgba(0,0,0,0.1); }
-        body[dir="ltr"] .sidebar { left: 0; box-shadow: 4px 0 10px rgba(0,0,0,0.1); }
-        
-        body[dir="rtl"] .main-content { margin-right: 220px; margin-left: 0; }
-        body[dir="ltr"] .main-content { margin-left: 220px; margin-right: 0; }
+        .nav-tab i { font-size: 18px; margin-bottom: 3px; transition: transform 0.2s; }
+        .nav-tab.active { color: var(--primary); }
+        .nav-tab.active i { transform: translateY(-2px) scale(1.1); }
 
-        .sidebar-header { padding: 15px 10px; font-size: 14px; font-weight: bold; background-color: #172554; text-align: center; }
-        .user-info-bar { padding: 8px; background: rgba(255,255,255,0.1); text-align: center; font-size: 11px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .menu-item {
-            display: flex; justify-content: space-between; align-items: center; padding: 12px 12px; color: #e2e8f0;
-            text-decoration: none; font-size: 13px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05);
+        /* Container & Cards */
+        .container { padding: 12px; max-width: 800px; margin: 0 auto; }
+        .tab-content { display: none; animation: fadeIn 0.25s ease-in-out; }
+        .tab-content.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card {
+            background: var(--card-bg); border-radius: 16px; padding: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid var(--border); margin-bottom: 12px;
         }
-        .menu-item:hover, .menu-item.active { background-color: var(--sidebar-hover); color: #fff; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .card-title { font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
 
-        .main-content { flex: 1; padding: 15px; width: calc(100% - 220px); }
-        .container { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 900px; margin: 0 auto; }
-        .tab-content { display: none; }
-        .tab-content.active { display: flex; flex-direction: column; gap: 15px; }
+        /* Inputs & Buttons */
+        .form-control { width: 100%; padding: 11px 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 13px; margin-bottom: 8px; transition: 0.2s; }
+        .form-control:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
 
-        .card { background-color: var(--card-bg); padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border: 1px solid var(--border-color); }
-        .search-box input, .form-grid input, .form-grid select { width: 100%; padding: 10px; font-size: 14px; border: 1px solid var(--border-color); border-radius: 8px; }
-        .table-wrapper { overflow-x: auto; margin-top: 10px; border-radius: 8px; border: 1px solid var(--border-color); }
-        table { width: 100%; border-collapse: collapse; background: #fff; }
-        th, td { padding: 8px 10px; border-bottom: 1px solid var(--border-color); font-size: 12px; }
-        th { background-color: #f8fafc; color: var(--dark); }
-        body[dir="rtl"] table { text-align: right; }
-        body[dir="ltr"] table { text-align: left; }
-
-        .btn-main { width: 100%; background: var(--success); color: white; border: none; padding: 12px; font-size: 14px; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 10px; }
-        .btn-danger { background: var(--danger); color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; }
-        .btn-warning { background: var(--warning); color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; }
-
-        .grid-menu { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; margin-top: 15px; }
-        .grid-item {
-            background: #f8fafc; border: 1px solid var(--border-color); border-radius: 12px; padding: 15px 10px;
-            text-align: center; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; gap: 8px;
+        .btn {
+            width: 100%; padding: 11px; border: none; border-radius: 10px; font-weight: 700;
+            font-size: 13px; cursor: pointer; display: flex; justify-content: center; align-items: center;
+            gap: 6px; transition: 0.2s;
         }
-        .grid-item:hover { background: #eff6ff; border-color: var(--primary); transform: translateY(-2px); }
-        .grid-item span { font-size: 22px; }
-        .grid-item p { font-size: 12px; font-weight: 600; color: var(--dark); }
+        .btn:active { transform: scale(0.98); }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-success { background: var(--success); color: #fff; }
+        .btn-warning { background: var(--warning); color: #fff; }
+        .btn-danger { background: var(--danger); color: #fff; }
 
-        .top-stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 10px; }
-        .top-stat-card { 
-            background: #fff; padding: 12px; border-radius: 12px; border: 1px solid var(--border-color); 
-            text-align: center; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+        /* Dashboard Alert Cards */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+        .stat-card {
+            padding: 14px; border-radius: 14px; background: #fff; border: 1px solid var(--border);
+            text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.02);
         }
-        .top-stat-card h4 { font-size: 11px; color: #64748b; margin-bottom: 5px; }
-        .top-stat-card span { font-size: 16px; font-weight: bold; }
+        .stat-card.warning { border-top: 4px solid var(--warning); }
+        .stat-card.danger { border-top: 4px solid var(--danger); }
+        .stat-card h5 { font-size: 10px; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase; }
+        .stat-card .val { font-size: 20px; font-weight: 800; }
 
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); display: none; justify-content: center; align-items: center; z-index: 1000; }
-        .receipt-modal-card {
-            background: #ffffff; padding: 18px; border-radius: 12px; width: 95%; max-width: 420px;
-            font-family: 'Segoe UI', Arial, sans-serif; max-height: 90vh; overflow-y: auto; text-align: right;
-            border: 2px solid #1e3a8a; box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-        }
+        /* Table Design */
+        .table-responsive { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); }
+        table { width: 100%; border-collapse: collapse; background: #fff; font-size: 11px; }
+        th, td { padding: 10px; border-bottom: 1px solid var(--border); text-align: right; }
+        th { background: #f1f5f9; font-weight: 700; color: var(--text-muted); }
 
-        @media print {
-            body * { visibility: hidden; }
-            #supplierTableArea, #supplierTableArea * { visibility: visible; }
-            #supplierTableArea { position: absolute; left: 0; top: 0; width: 100%; }
-        }
+        /* Modals */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.75); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 15px; }
+        .modal-card { background: #fff; border-radius: 18px; padding: 18px; width: 100%; max-width: 400px; max-height: 85vh; overflow-y: auto; }
 
-        @media (max-width: 600px) {
-            .sidebar { width: 140px; }
-            .sidebar-header { font-size: 11px; padding: 10px 4px; }
-            .menu-item { font-size: 11px; padding: 10px 5px; }
-            body[dir="rtl"] .main-content { margin-right: 140px; }
-            body[dir="ltr"] .main-content { margin-left: 140px; }
-        }
+        /* Scanner */
+        #interactive.viewport { width: 100%; height: 180px; position: relative; overflow: hidden; border-radius: 12px; border: 2px dashed var(--primary); }
+        #interactive.viewport video { width: 100%; height: 100%; object-fit: cover; }
     </style>
 </head>
-<body dir="rtl">
+<body>
 
-    <!-- Login Modal -->
-    <div id="loginModal" class="login-overlay">
-        <div class="login-box">
-            <h2>🏪 سسټم ته ننوتل</h2>
-            <select id="loginUserSelect">
-                <option value="admin">اصلي مدیر (Admin)</option>
-            </select>
-            <input type="password" id="loginPassword" placeholder="رمز / Password (1234)">
-            <button class="btn-main" style="background: var(--primary);" onclick="attemptLogin()">ورننوځه (Login)</button>
-        </div>
-    </div>
-
-    <!-- Sidebar Menu -->
-    <div class="sidebar">
-        <div class="sidebar-header">🏪 سوپرمارکیټ POS</div>
-        <div class="user-info-bar">
-            <span>👤 کارمند:</span> <b id="currentUserDisplay">-</b><br>
-            <button onclick="logout()" style="margin-top: 5px; padding: 2px 6px; font-size: 10px; background: var(--danger); color: #fff; border: none; border-radius: 4px; cursor: pointer;">خروج</button>
-        </div>
-
-        <div style="padding: 10px; background: rgba(0,0,0,0.2);">
-            <select id="langSelector" onchange="changeLanguage(this.value)" style="width: 100%; padding: 6px; border-radius: 6px; font-size: 12px; background: #fff; color: #000;">
-                <option value="ps">پښتو (Pashto)</option>
-                <option value="ar">العربية (Arabic)</option>
-                <option value="en">English (انګرېزي)</option>
+    <!-- App Header -->
+    <header class="app-header">
+        <div class="app-brand"><i class="fa-solid fa-store"></i> D-MART POS</div>
+        <div class="header-controls">
+            <span style="font-size: 11px; opacity: 0.9;" id="currentUserDisp">Admin</span>
+            <select class="lang-select" id="langSelector" onchange="changeLanguage(this.value)">
+                <option value="ps">پښتو</option>
+                <option value="ar">العربية</option>
+                <option value="en">English</option>
             </select>
         </div>
+    </header>
+
+    <!-- Main Body Container -->
+    <div class="container">
         
-        <a class="menu-item active" onclick="showTab('dashboardTab')"><span>🏠 ډیشبورډ</span></a>
-        <a class="menu-item" onclick="showTab('posTab')"><span>🛒 پلور (POS)</span></a>
-        <a class="menu-item" onclick="showTab('suppliersTab')"><span>🚛 سپلائران</span></a>
-        <a class="menu-item" onclick="showTab('customersTab')"><span>⭐ مشتریان</span></a>
-        <a class="menu-item" onclick="showTab('shiftTab')"><span>⏱️ شفټ</span></a>
-        <a class="menu-item" onclick="showTab('inventoryTab')"><span>📦 انبار</span></a>
-        <a class="menu-item" onclick="showTab('reportsTab')"><span>📈 راپورونه</span></a>
-        <a class="menu-item" onclick="showTab('employeesTab')"><span>👥 کارمندان</span></a>
-    </div>
-
-    <!-- Main Content Area -->
-    <div class="main-content">
-        <div class="container">
-            
-            <!-- 1. Dashboard -->
-            <div id="dashboardTab" class="tab-content active">
-                <div class="card">
-                    <div class="top-stats-row">
-                        <!-- کم موجودي توکي -> زیړ رنګ -->
-                        <div class="top-stat-card" style="border-top: 4px solid var(--warning);">
-                            <h4>کم موجودي توکي</h4>
-                            <span id="dashLowStockCount" style="color: var(--warning);">0</span>
-                        </div>
-                        <!-- تاریخ تېر / نږدې توکي -> سور رنګ -->
-                        <div class="top-stat-card" style="border-top: 4px solid var(--danger);">
-                            <h4>تاریخ تېر / نږدې توکي</h4>
-                            <span id="dashExpiredCount" style="color: var(--danger);">0</span>
-                        </div>
-                    </div>
-
-                    <!-- د ډېشبورډ بټنې او شارټ کټونه -->
-                    <div class="grid-menu">
-                        <div class="grid-item" onclick="showTab('posTab')"><span>📷</span><p>سکنر</p></div>
-                        <div class="grid-item" onclick="showTab('suppliersTab')"><span>🚛</span><p>سپلائران</p></div>
-                        <div class="grid-item" onclick="showTab('inventoryTab')"><span>📦</span><p>موجودي</p></div>
-                        <div class="grid-item" onclick="showTab('dashboardTab')"><span>📊</span><p>ډېشبورډ</p></div>
-                        <div class="grid-item" onclick="showTab('posTab')"><span>📈</span><p>پلور</p></div>
-                        <div class="grid-item" onclick="showTab('customersTab')"><span>⭐</span><p>مشتریان</p></div>
-                        <div class="grid-item" onclick="showTab('shiftTab')"><span>⏱️</span><p>شفټ</p></div>
-                        <div class="grid-item" onclick="showTab('reportsTab')"><span>📋</span><p>راپورونه</p></div>
-                        <div class="grid-item" onclick="showTab('employeesTab')"><span>👥</span><p>کارمندان</p></div>
-                    </div>
+        <!-- 1. DASHBOARD -->
+        <div id="dashboardTab" class="tab-content active">
+            <div class="stats-grid">
+                <div class="stat-card warning">
+                    <h5 data-i18n="dashLow">کم موجودي توکي</h5>
+                    <div class="val" id="dashLowStockCount" style="color: var(--warning);">0</div>
+                </div>
+                <div class="stat-card danger">
+                    <h5 data-i18n="dashExp">تاریخ تېر / نږدې توکي</h5>
+                    <div class="val" id="dashExpiredCount" style="color: var(--danger);">0</div>
                 </div>
             </div>
 
-            <!-- 2. Suppliers -->
-            <div id="suppliersTab" class="tab-content">
-                <div class="card">
-                    <h3>🚛 د سپلائرانو (عرضه کوونکو) مدیریت</h3>
-                    <div class="form-grid" style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px;">
-                        <input type="text" id="supCompany" placeholder="د شرکت نوم / Company Name">
-                        <input type="text" id="supName" placeholder="د سپلائر نوم / Contact Person">
-                        <input type="text" id="supPhone" placeholder="تیلیفون / Phone Number">
-                        <input type="number" id="supBalance" placeholder="پخوانی باقیات/پور (SAR)">
-                        <button class="btn-main" style="background: var(--primary);" onclick="addSupplier()">+ نوی سپلائر ثبت کړه</button>
-                    </div>
-                </div>
-                <div class="card" id="supplierTableArea">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                        <h4>د سپلائرانو لیست</h4>
-                        <button class="btn-main" style="width: auto; background: var(--primary); font-size: 11px; margin:0; padding: 6px 10px;" onclick="window.print()">🖨️ سپلائر لیست پرنټ کړه</button>
-                    </div>
-                    <div class="table-wrapper">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>شرکت</th>
-                                    <th>سپلائر</th>
-                                    <th>شمېره</th>
-                                    <th>باقیات (پور)</th>
-                                    <th>عملیه</th>
-                                </tr>
-                            </thead>
-                            <tbody id="supplierTable"></tbody>
-                        </table>
-                    </div>
+            <div class="card">
+                <div class="card-title" style="margin-bottom: 12px;"><i class="fa-solid fa-bolt" style="color:var(--warning);"></i> <span data-i18n="quickNav">د چټک لاسرسي بټنې</span></div>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; text-align: center;">
+                    <div onclick="showTab('posTab')" style="background:#eef2ff; padding:12px; border-radius:12px; cursor:pointer;"><i class="fa-solid fa-cart-shopping" style="color:var(--primary); font-size:20px;"></i><p style="font-size:10px; font-weight:700; margin-top:4px;" data-i18n="mPos">پلور</p></div>
+                    <div onclick="showTab('suppliersTab')" style="background:#ecfdf5; padding:12px; border-radius:12px; cursor:pointer;"><i class="fa-solid fa-truck" style="color:var(--success); font-size:20px;"></i><p style="font-size:10px; font-weight:700; margin-top:4px;" data-i18n="mSuppliers">سپلائران</p></div>
+                    <div onclick="showTab('inventoryTab')" style="background:#fffbeb; padding:12px; border-radius:12px; cursor:pointer;"><i class="fa-solid fa-boxes-stacked" style="color:var(--warning); font-size:20px;"></i><p style="font-size:10px; font-weight:700; margin-top:4px;" data-i18n="mInv">انبار</p></div>
+                    <div onclick="showTab('reportsTab')" style="background:#fef2f2; padding:12px; border-radius:12px; cursor:pointer;"><i class="fa-solid fa-chart-pie" style="color:var(--danger); font-size:20px;"></i><p style="font-size:10px; font-weight:700; margin-top:4px;" data-i18n="mRep">راپورونه</p></div>
                 </div>
             </div>
-
-            <!-- 3. Inventory -->
-            <div id="inventoryTab" class="tab-content">
-                <div class="card">
-                    <h3>📦 د انبار لیست</h3>
-                    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;">
-                        <input type="text" id="newProdBarcode" placeholder="بارکوډ" style="flex:1; padding:8px; border-radius:6px; border:1px solid #ccc;">
-                        <input type="text" id="newProdName" placeholder="د جنس نوم" style="flex:2; padding:8px; border-radius:6px; border:1px solid #ccc;">
-                        <input type="number" id="newProdPrice" placeholder="قیمت" style="flex:1; padding:8px; border-radius:6px; border:1px solid #ccc;">
-                        <input type="number" id="newProdStock" placeholder="تعداد" style="flex:1; padding:8px; border-radius:6px; border:1px solid #ccc;">
-                        <input type="date" id="newProdExpiry" placeholder="د ختمېدو نېټه" style="flex:1; padding:8px; border-radius:6px; border:1px solid #ccc;">
-                        <button class="btn-main" style="width:auto; margin:0;" onclick="addNewProduct()">ثبت</button>
-                    </div>
-                    <div class="table-wrapper">
-                        <table>
-                            <thead>
-                                <tr><th>بارکوډ</th><th>نوم</th><th>قیمت</th><th>تعداد</th><th>د ختمېدو نېټه</th></tr>
-                            </thead>
-                            <tbody id="inventoryTable"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 4. Customers -->
-            <div id="customersTab" class="tab-content">
-                <div class="card">
-                    <h3>⭐ د مشتریانو اداره</h3>
-                    <div class="form-grid" style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px;">
-                        <input type="text" id="custName" placeholder="نوم">
-                        <input type="text" id="custPhone" placeholder="تیلیفون">
-                        <button class="btn-main" style="background: var(--primary);" onclick="addCustomer()">ثبت</button>
-                    </div>
-                    <div class="table-wrapper">
-                        <table>
-                            <thead><tr><th>نوم</th><th>شمېره</th><th>پواینټونه</th></tr></thead>
-                            <tbody id="customerTable"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 5. POS Terminal -->
-            <div id="posTab" class="tab-content">
-                <div class="card">
-                    <h3>🛒 پلور (POS)</h3>
-                    <div class="search-box">
-                        <input type="text" id="barcodeInput" placeholder="بارکوډ سکین کړئ..." onkeypress="handleBarcodeInput(event)" autofocus>
-                    </div>
-                    <div class="table-wrapper">
-                        <table>
-                            <thead><tr><th>جنس</th><th>قیمت</th><th>تعداد</th><th>جمله</th><th>عملیه</th></tr></thead>
-                            <tbody id="cartTable"></tbody>
-                        </table>
-                    </div>
-                    <div style="margin-top: 10px; font-weight: bold; font-size: 16px;">ټولټال: <span id="grandTotal" style="color: var(--success);">0.00</span> SAR</div>
-                    <button class="btn-main" onclick="printReceipt()">بل خلاص کړه</button>
-                </div>
-            </div>
-
-            <!-- 6. Shift Management -->
-            <div id="shiftTab" class="tab-content">
-                <div class="card">
-                    <h3>⏱️ شفټ مدیریت</h3>
-                    <input type="number" id="shiftStartCash" placeholder="پیل نغدې (SAR)" style="margin-bottom: 10px; width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px;">
-                    <button class="btn-main" onclick="startShift()">شفټ خلاص کړه</button>
-                </div>
-            </div>
-
-            <!-- 7. Reports -->
-            <div id="reportsTab" class="tab-content">
-                <div class="card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
-                        <h3>📊 راپورونه او تحلیلونه</h3>
-                        <button class="btn-main" style="width: auto; background: var(--success); font-size: 12px; margin: 0; padding: 8px 12px;" onclick="exportToCSV()">📥 اکسل ته امپورټ</button>
-                    </div>
-                    <br>
-                    <div class="top-stats-row">
-                        <div class="top-stat-card" style="border-top: 4px solid var(--primary);" onclick="showSalesDetails()">
-                            <h4>ټول پلور (Sales)</h4>
-                            <span id="repTotalSales" style="color: var(--primary);">0.00 SAR</span>
-                        </div>
-                        <div class="top-stat-card" style="border-top: 4px solid #b45309;" onclick="showSalesDetails()">
-                            <h4>واجب زکات (2.5%)</h4>
-                            <span id="repZakat" style="color: #b45309;">0.00 SAR</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card" id="salesDetailsCard" style="display: none;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                        <h4>📋 د پلور شویو فاکتورونو تفصیلي لیست</h4>
-                        <button class="btn-danger" style="width: auto;" onclick="document.getElementById('salesDetailsCard').style.display='none'">پټول</button>
-                    </div>
-                    <div class="table-wrapper">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>تاریخ / وخت</th>
-                                    <th>مجموعه (SAR)</th>
-                                </tr>
-                            </thead>
-                            <tbody id="salesDetailsTable"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 8. Employees -->
-            <div id="employeesTab" class="tab-content">
-                <div class="card">
-                    <h3>👥 کارمندان</h3>
-                    <input type="text" id="empName" placeholder="نوم" style="width:100%; padding:10px; margin-bottom:8px; border:1px solid #ccc; border-radius:8px;">
-                    <input type="password" id="empPass" placeholder="رمز" style="width:100%; padding:10px; margin-bottom:8px; border:1px solid #ccc; border-radius:8px;">
-                    <button class="btn-main" style="background: var(--primary);" onclick="addEmployee()">اضافه کړه</button>
-                </div>
-            </div>
-
         </div>
+
+        <!-- 2. POS TERMINAL -->
+        <div id="posTab" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title"><i class="fa-solid fa-cart-shopping"></i> <span data-i18n="posTitle">د پلور ټرمينل</span></div>
+                    <button class="btn btn-primary" style="width:auto; padding:6px 10px; font-size:11px;" onclick="toggleCameraScanner()"><i class="fa-solid fa-camera"></i> <span data-i18n="camScan">کامره</span></button>
+                </div>
+
+                <div id="cameraScannerBox" style="display: none; margin-bottom: 10px;">
+                    <div id="interactive" class="viewport"></div>
+                </div>
+
+                <input type="text" id="barcodeInput" class="form-control" placeholder="بارکوډ سکین کړئ..." onkeypress="handleBarcodeInput(event)" autofocus>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr><th data-i18n="thItem">جنس</th><th data-i18n="thPrice">قیمت</th><th data-i18n="thQty">تعداد</th><th data-i18n="thTotal">جمله</th><th>#</th></tr>
+                        </thead>
+                        <tbody id="cartTable"></tbody>
+                    </table>
+                </div>
+
+                <div style="margin-top: 12px; display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 15px;">
+                    <span data-i18n="posGrandTotal">ټولټال (VAT 15%):</span>
+                    <span id="grandTotal" style="color: var(--success);">0.00 SAR</span>
+                </div>
+
+                <button class="btn btn-success" style="margin-top:10px;" onclick="printReceipt()"><i class="fa-solid fa-receipt"></i> <span data-i18n="btnCheckout">بل خلاص کړه</span></button>
+            </div>
+        </div>
+
+        <!-- 3. SUPPLIERS -->
+        <div id="suppliersTab" class="tab-content">
+            <div class="card">
+                <div class="card-title"><i class="fa-solid fa-truck"></i> <span data-i18n="supTitle">د سپلائرانو مدیریت</span></div>
+                <div style="margin-top:10px;">
+                    <input type="text" id="supCompany" class="form-control" placeholder="د شرکت نوم">
+                    <input type="text" id="supName" class="form-control" placeholder="د سپلائر نوم">
+                    <input type="text" id="supPhone" class="form-control" placeholder="تیلیفون شمیره">
+                    <input type="number" id="supBalance" class="form-control" placeholder="پخوانی باقیات/پور (SAR)">
+                    <button class="btn btn-primary" onclick="addSupplier()"><i class="fa-solid fa-plus"></i> <span data-i18n="btnAddSup">ثبت کړه</span></button>
+                </div>
+            </div>
+
+            <div class="card" id="supplierTableArea">
+                <div class="card-header">
+                    <div class="card-title" data-i18n="supListTitle">د سپلائرانو لیست</div>
+                    <button class="btn btn-primary" style="width:auto; padding:5px 10px; font-size:11px;" onclick="window.print()"><i class="fa-solid fa-print"></i> پرنټ</button>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr><th>شرکت</th><th>سپلائر</th><th>شمېره</th><th>باقیات</th><th>عملیه</th></tr>
+                        </thead>
+                        <tbody id="supplierTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. INVENTORY -->
+        <div id="inventoryTab" class="tab-content">
+            <div class="card">
+                <div class="card-title"><i class="fa-solid fa-boxes-stacked"></i> <span data-i18n="invTitle">د انبار لیست</span></div>
+                <div style="margin-top:10px; display:grid; grid-template-columns: 1fr 1fr; gap:6px;">
+                    <input type="text" id="newProdBarcode" class="form-control" placeholder="بارکوډ">
+                    <input type="text" id="newProdName" class="form-control" placeholder="جنس نوم">
+                    <input type="number" id="newProdPrice" class="form-control" placeholder="قیمت">
+                    <input type="number" id="newProdStock" class="form-control" placeholder="تعداد">
+                    <input type="date" id="newProdExpiry" class="form-control" style="grid-column: span 2;">
+                    <button class="btn btn-success" style="grid-column: span 2;" onclick="addNewProduct()"><i class="fa-solid fa-plus"></i> ثبت</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr><th>بارکوډ</th><th>نوم</th><th>قیمت</th><th>تعداد</th><th>تاریخ ختمېدو</th></tr>
+                        </thead>
+                        <tbody id="inventoryTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. REPORTS -->
+        <div id="reportsTab" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title"><i class="fa-solid fa-chart-pie"></i> <span data-i18n="repTitle">مالي راپورونه</span></div>
+                    <button class="btn btn-success" style="width:auto; padding:5px 10px; font-size:11px;" onclick="exportToCSV()"><i class="fa-solid fa-file-excel"></i> اکسل</button>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card" style="border-top: 4px solid var(--primary);" onclick="showSalesDetails()">
+                        <h5 data-i18n="repSales">ټول پلور</h5>
+                        <div class="val" id="repTotalSales" style="color:var(--primary);">0.00 SAR</div>
+                    </div>
+                    <div class="stat-card" style="border-top: 4px solid #b45309;" onclick="showSalesDetails()">
+                        <h5 data-i18n="repZakat">واجب زکات (2.5%)</h5>
+                        <div class="val" id="repZakat" style="color:#b45309;">0.00 SAR</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" id="salesDetailsCard" style="display: none;">
+                <div class="card-header">
+                    <div class="card-title">📋 تفصیلي فاکتورونه</div>
+                    <button class="btn btn-danger" style="width:auto; padding:4px 8px; font-size:10px;" onclick="document.getElementById('salesDetailsCard').style.display='none'">X</button>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead><tr><th>تاریخ</th><th>مجموعه</th></tr></thead>
+                        <tbody id="salesDetailsTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
     </div>
+
+    <!-- Bottom Mobile Navigation -->
+    <nav class="bottom-nav">
+        <a class="nav-tab active" onclick="showTab('dashboardTab')"><i class="fa-solid fa-house"></i><span data-i18n="mDash">کورپاڼه</span></a>
+        <a class="nav-tab" onclick="showTab('posTab')"><i class="fa-solid fa-cart-shopping"></i><span data-i18n="mPos">پلور</span></a>
+        <a class="nav-tab" onclick="showTab('suppliersTab')"><i class="fa-solid fa-truck"></i><span data-i18n="mSuppliers">سپلائران</span></a>
+        <a class="nav-tab" onclick="showTab('inventoryTab')"><i class="fa-solid fa-boxes-stacked"></i><span data-i18n="mInv">انبار</span></a>
+        <a class="nav-tab" onclick="showTab('reportsTab')"><i class="fa-solid fa-chart-pie"></i><span data-i18n="mRep">راپورونه</span></a>
+    </nav>
 
 <script>
-    let employees = JSON.parse(localStorage.getItem('pos_employees')) || [{ id: 'admin', name: 'اصلي مدیر', pass: '1234' }];
-    let customers = JSON.parse(localStorage.getItem('pos_customers')) || [];
-    let suppliers = JSON.parse(localStorage.getItem('pos_suppliers')) || [
-        { id: "1", company: "المراعي / Almarai", name: "احمد علي", phone: "0500000000", balance: 1500.00 }
-    ];
+    const translations = {
+        ps: {
+            dashLow: "کم موجودي توکي", dashExp: "تاریخ تېر / نږدې توکي", quickNav: "د چټک لاسرسي بټنې",
+            mDash: "کورپاڼه", mPos: "پلور", mSuppliers: "سپلائران", mInv: "انبار", mRep: "راپورونه",
+            posTitle: "د پلور ټرمينل", camScan: "کامره", thItem: "جنس", thPrice: "قیمت", thQty: "تعداد", thTotal: "جمله",
+            posGrandTotal: "ټولټال (VAT 15%):", btnCheckout: "بل خلاص کړه", supTitle: "د سپلائرانو مدیریت",
+            btnAddSup: "ثبت کړه", supListTitle: "د سپلائرانو لیست", invTitle: "د انبار لیست", repTitle: "مالي راپورونه",
+            repSales: "ټول پلور", repZakat: "واجب زکات (2.5%)"
+        },
+        ar: {
+            dashLow: "المخزون المنخفض", dashExp: "منتهي الصلاحية", quickNav: "وصول سريع",
+            mDash: "الرئيسية", mPos: "المبيعات", mSuppliers: "الموردين", mInv: "المخزون", mRep: "التقارير",
+            posTitle: "نقطة البيع", camScan: "كاميرا", thItem: "الصنف", thPrice: "السعر", thQty: "الكمية", thTotal: "المجموع",
+            posGrandTotal: "الإجمالي (شامل الضريبة 15%):", btnCheckout: "إصدار الفاتورة", supTitle: "إدارة الموردين",
+            btnAddSup: "إضافة", supListTitle: "قائمة الموردين", invTitle: "قائمة المخزون", repTitle: "التقارير المالية",
+            repSales: "إجمالي المبيعات", repZakat: "الزكاة الواجبة (2.5%)"
+        },
+        en: {
+            dashLow: "Low Stock Items", dashExp: "Expired / Near Expiry", quickNav: "Quick Navigation",
+            mDash: "Home", mPos: "POS", mSuppliers: "Suppliers", mInv: "Stock", mRep: "Reports",
+            posTitle: "POS Terminal", camScan: "Camera", thItem: "Item", thPrice: "Price", thQty: "Qty", thTotal: "Total",
+            posGrandTotal: "Grand Total (15% VAT):", btnCheckout: "Checkout", supTitle: "Supplier Management",
+            btnAddSup: "Save", supListTitle: "Suppliers List", invTitle: "Inventory List", repTitle: "Financial Reports",
+            repSales: "Total Sales", repZakat: "Due Zakat (2.5%)"
+        }
+    };
+
+    let currentLang = localStorage.getItem('pos_lang') || 'ps';
+    let suppliers = JSON.parse(localStorage.getItem('pos_suppliers')) || [{ id: "1", company: "Almarai / المراعي", name: "احمد علي", phone: "0500000000", balance: 1500.00 }];
     let dbProducts = JSON.parse(localStorage.getItem('pos_products')) || [
         { id: "101", name: "کوکا کولا 1.5L", price: 23.0, stock: 3, expiry: "2025-01-01" },
         { id: "102", name: "شېدې 1L", price: 11.0, stock: 15, expiry: "2028-06-01" }
     ];
     let salesHistory = JSON.parse(localStorage.getItem('pos_sales')) || [];
     let cart = [];
-    let currentUser = null;
+    let isCameraRunning = false;
 
-    function attemptLogin() {
-        let pass = document.getElementById('loginPassword').value.trim();
-        if(pass === '1234' || pass === '') {
-            currentUser = employees[0];
-            document.getElementById('loginModal').style.display = 'none';
-            document.getElementById('currentUserDisplay').innerText = currentUser.name;
-            showTab('dashboardTab');
-            checkStockAlerts();
-        } else { alert("غلط رمز!"); }
+    // Beep Sound Synthesis for Scanning
+    function playBeepSound() {
+        try {
+            let ctx = new (window.AudioContext || window.webkitAudioContext)();
+            let osc = ctx.createOscillator();
+            let gain = ctx.createGain();
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.type = "sine"; osc.frequency.value = 1200; gain.gain.value = 0.1;
+            osc.start(); setTimeout(() => osc.stop(), 100);
+        } catch(e) {}
     }
 
-    function logout() { location.reload(); }
+    function changeLanguage(lang) {
+        currentLang = lang;
+        localStorage.setItem('pos_lang', lang);
+        let root = document.getElementById('htmlRoot');
+        root.setAttribute('dir', lang === 'en' ? 'ltr' : 'rtl');
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            let k = el.getAttribute('data-i18n');
+            if(translations[lang] && translations[lang][k]) el.innerText = translations[lang][k];
+        });
+        document.getElementById('langSelector').value = lang;
+    }
 
     function showTab(tabId) {
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.nav-tab').forEach(n => n.classList.remove('active'));
+        
         let target = document.getElementById(tabId);
         if(target) target.classList.add('active');
+
+        let navIndex = { 'dashboardTab':0, 'posTab':1, 'suppliersTab':2, 'inventoryTab':3, 'reportsTab':4 }[tabId];
+        if(navIndex !== undefined) document.querySelectorAll('.nav-tab')[navIndex].classList.add('active');
+
         if(tabId === 'suppliersTab') renderSuppliers();
         if(tabId === 'inventoryTab') renderInventory();
-        if(tabId === 'customersTab') renderCustomers();
         if(tabId === 'reportsTab') loadReports();
         if(tabId === 'dashboardTab') checkStockAlerts();
     }
@@ -382,11 +365,8 @@
         let today = new Date().toISOString().split('T')[0];
         let lowStockCount = dbProducts.filter(p => p.stock <= 5).length;
         let expiredCount = dbProducts.filter(p => p.expiry && p.expiry < today).length;
-        
-        let lowEl = document.getElementById('dashLowStockCount');
-        let expEl = document.getElementById('dashExpiredCount');
-        if(lowEl) lowEl.innerText = lowStockCount;
-        if(expEl) expEl.innerText = expiredCount;
+        document.getElementById('dashLowStockCount').innerText = lowStockCount;
+        document.getElementById('dashExpiredCount').innerText = expiredCount;
     }
 
     function addSupplier() {
@@ -398,11 +378,8 @@
         suppliers.push({ id: Date.now().toString(), company, name, phone: phone || '-', balance });
         localStorage.setItem('pos_suppliers', JSON.stringify(suppliers));
         renderSuppliers();
-        document.getElementById('supCompany').value = '';
-        document.getElementById('supName').value = '';
-        document.getElementById('supPhone').value = '';
-        document.getElementById('supBalance').value = '';
-        alert("سپلائر ثبت شو!");
+        document.getElementById('supCompany').value = ''; document.getElementById('supName').value = '';
+        document.getElementById('supPhone').value = ''; document.getElementById('supBalance').value = '';
     }
 
     function renderSuppliers() {
@@ -413,13 +390,11 @@
             let waLink = s.phone !== '-' ? `https://wa.me/${s.phone.replace(/[^0-9]/g, '')}` : '#';
             tbody.innerHTML += `
                 <tr>
-                    <td><b>${s.company}</b></td>
-                    <td>${s.name}</td>
-                    <td>${s.phone}</td>
+                    <td><b>${s.company}</b></td><td>${s.name}</td><td>${s.phone}</td>
                     <td><b style="color:var(--danger);">${s.balance.toFixed(2)} SAR</b></td>
                     <td>
-                        <a href="${waLink}" target="_blank" style="background:#25d366; color:#fff; padding:4px 8px; border-radius:4px; text-decoration:none; font-size:11px;">💬 واټساپ</a>
-                        <button class="btn-danger" onclick="suppliers.splice(${idx},1);localStorage.setItem('pos_suppliers', JSON.stringify(suppliers));renderSuppliers();">X</button>
+                        <a href="${waLink}" target="_blank" style="background:#25d366; color:#fff; padding:3px 6px; border-radius:4px; text-decoration:none;"><i class="fa-brands fa-whatsapp"></i></a>
+                        <button class="btn-danger" style="padding:2px 5px;" onclick="suppliers.splice(${idx},1);localStorage.setItem('pos_suppliers', JSON.stringify(suppliers));renderSuppliers();">X</button>
                     </td>
                 </tr>
             `;
@@ -432,12 +407,10 @@
         let price = parseFloat(document.getElementById('newProdPrice').value) || 0;
         let stock = parseInt(document.getElementById('newProdStock').value) || 0;
         let expiry = document.getElementById('newProdExpiry').value;
-        if(!id || !name) return alert("بارکوډ او نوم ولیکئ!");
+        if(!id || !name) return alert("معلومات ولیکئ!");
         dbProducts.push({ id, name, price, stock, expiry: expiry || "2028-01-01" });
         localStorage.setItem('pos_products', JSON.stringify(dbProducts));
-        renderInventory();
-        checkStockAlerts();
-        alert("جنس ثبت شو!");
+        renderInventory(); checkStockAlerts();
     }
 
     function renderInventory() {
@@ -449,39 +422,12 @@
         });
     }
 
-    function addCustomer() {
-        let name = document.getElementById('custName').value.trim();
-        let phone = document.getElementById('custPhone').value.trim();
-        if(!name) return alert("نوم ولیکئ!");
-        customers.push({ name, phone: phone || '-', points: 0 });
-        localStorage.setItem('pos_customers', JSON.stringify(customers));
-        renderCustomers();
-        alert("مشتری ثبت شو!");
-    }
-
-    function renderCustomers() {
-        let tbody = document.getElementById('customerTable');
-        if(!tbody) return;
-        tbody.innerHTML = '';
-        customers.forEach((c, idx) => {
-            tbody.innerHTML += `<tr><td>${c.name}</td><td>${c.phone}</td><td>${c.points}</td></tr>`;
-        });
-    }
-
-    function addEmployee() {
-        let name = document.getElementById('empName').value.trim();
-        let pass = document.getElementById('empPass').value.trim();
-        if(!name || !pass) return alert("نوم او رمز ولیکئ!");
-        employees.push({ id: Date.now().toString(), name, pass });
-        localStorage.setItem('pos_employees', JSON.stringify(employees));
-        alert("کارمند اضافه شو!");
-    }
-
     function handleBarcodeInput(e) {
         if (e.key === 'Enter') {
             let code = e.target.value.trim();
             let product = dbProducts.find(p => p.id === code || p.name.includes(code));
             if(product) {
+                playBeepSound();
                 let item = cart.find(i => i.id === product.id);
                 if(item) item.qty++; else cart.push({ ...product, qty: 1 });
                 renderCart();
@@ -497,11 +443,10 @@
         let subtotal = 0;
         cart.forEach((i, idx) => {
             subtotal += i.price * i.qty;
-            tbody.innerHTML += `<tr><td>${i.name}</td><td>${i.price}</td><td>${i.qty}</td><td>${(i.price*i.qty).toFixed(2)}</td><td><button class="btn-danger" onclick="cart.splice(${idx},1);renderCart();">X</button></td></tr>`;
+            tbody.innerHTML += `<tr><td>${i.name}</td><td>${i.price}</td><td>${i.qty}</td><td>${(i.price*i.qty).toFixed(2)}</td><td><button class="btn-danger" style="padding:2px 5px;" onclick="cart.splice(${idx},1);renderCart();">X</button></td></tr>`;
         });
         let vat = subtotal * 0.15;
-        let finalTotal = subtotal + vat;
-        document.getElementById('grandTotal').innerText = finalTotal.toFixed(2);
+        document.getElementById('grandTotal').innerText = (subtotal + vat).toFixed(2) + ' SAR';
     }
 
     function printReceipt() {
@@ -510,10 +455,8 @@
         let finalTotal = subtotal + (subtotal * 0.15);
         salesHistory.push({ total: finalTotal, date: new Date().toLocaleString() });
         localStorage.setItem('pos_sales', JSON.stringify(salesHistory));
-        alert("فاکتور ثبت او چاپ شو!");
-        cart = [];
-        renderCart();
-        loadReports();
+        alert("بل ثبت شو! ټولټال: " + finalTotal.toFixed(2) + " SAR");
+        cart = []; renderCart(); loadReports();
     }
 
     function loadReports() {
@@ -525,12 +468,7 @@
     function showSalesDetails() {
         let card = document.getElementById('salesDetailsCard');
         let tbody = document.getElementById('salesDetailsTable');
-        card.style.display = 'block';
-        tbody.innerHTML = '';
-        if(salesHistory.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="2" style="text-align:center;">هیچ فاکتور ثبت شوی نشته</td></tr>`;
-            return;
-        }
+        card.style.display = 'block'; tbody.innerHTML = '';
         salesHistory.forEach(s => {
             tbody.innerHTML += `<tr><td>${s.date}</td><td><b>${s.total.toFixed(2)} SAR</b></td></tr>`;
         });
@@ -543,14 +481,36 @@
         let blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
         let link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
-        link.download = `Report.csv`;
-        link.click();
+        link.download = `Report.csv`; link.click();
     }
 
-    function changeLanguage(lang) {
-        localStorage.setItem('pos_lang', lang);
+    function toggleCameraScanner() {
+        let box = document.getElementById('cameraScannerBox');
+        if(!isCameraRunning) {
+            box.style.display = 'block';
+            Quagga.init({
+                inputStream : { name : "Live", type : "LiveStream", target: document.querySelector('#interactive') },
+                decoder : { readers : ["code_128_reader", "ean_reader", "ean_8_reader"] }
+            }, function(err) {
+                if (err) return alert("کامره پیدا نشوه!");
+                Quagga.start(); isCameraRunning = true;
+            });
+            Quagga.onDetected(function(result) {
+                let code = result.codeResult.code;
+                let product = dbProducts.find(p => p.id === code);
+                if(product) {
+                    playBeepSound();
+                    let item = cart.find(i => i.id === product.id);
+                    if(item) item.qty++; else cart.push({ ...product, qty: 1 });
+                    renderCart();
+                }
+            });
+        } else {
+            Quagga.stop(); box.style.display = 'none'; isCameraRunning = false;
+        }
     }
 
+    changeLanguage(currentLang);
     renderSuppliers();
     checkStockAlerts();
 </script>
