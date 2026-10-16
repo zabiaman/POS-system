@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="ps" dir="rtl" id="htmlRoot">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>د سوپرمارکیټ پرمختللی POS او ERP سیستم</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2/dist/quagga.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        :root {
+            --sidebar-bg: #1e3a8a;
+            --sidebar-hover: #1e40af;
+            --primary: #2563eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #0f172a;
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --border-color: #cbd5e1;
+        }
+
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; }
+        body { background-color: var(--bg-color); color: var(--dark); display: flex; min-height: 100vh; }
+
+        .login-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #0f172a; display: flex; justify-content: center; align-items: center; z-index: 2000;
+        }
+        .login-box {
+            background: #fff; padding: 25px; border-radius: 16px; width: 90%; max-width: 360px; text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+        .login-box h2 { margin-bottom: 15px; color: var(--sidebar-bg); font-size: 18px; }
+        .login-box input, .login-box select { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 14px; background: #fff; }
+
+        .sidebar {
+            width: 220px; background-color: var(--sidebar-bg); color: #fff; display: flex; flex-direction: column;
+            position: fixed; top: 0; height: 100%; overflow-y: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); z-index: 100;
+        }
+        body[dir="rtl"] .sidebar { right: 0; box-shadow: -4px 0 10px rgba(0,0,0,0.1); }
+        body[dir="ltr"] .sidebar { left: 0; box-shadow: 4px 0 10px rgba(0,0,0,0.1); }
+        
+        body[dir="rtl"] .main-content { margin-right: 220px; margin-left: 0; }
+        body[dir="ltr"] .main-content { margin-left: 220px; margin-right: 0; }
+
+        .sidebar-header { padding: 15px 10px; font-size: 14px; font-weight: bold; background-color: #172554; text-align: center; }
+        .user-info-bar { padding: 8px; background: rgba(255,255,255,0.1); text-align: center; font-size: 11px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .menu-item {
+            display: flex; justify-content: space-between; align-items: center; padding: 12px 12px; color: #e2e8f0;
+            text-decoration: none; font-size: 13px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .menu-item:hover, .menu-item.active { background-color: var(--sidebar-hover); color: #fff; }
+
+        .main-content { flex: 1; padding: 15px; width: calc(100% - 220px); }
+        .container { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 900px; margin: 0 auto; }
+        .tab-content { display: none; }
+        .tab-content.active { display: flex; flex-direction: column; gap: 15px; }
+
+        .card { background-color: var(--card-bg); padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border: 1px solid var(--border-color); }
+        .search-box input, .form-grid input, .form-grid select { width: 100%; padding: 10px; font-size: 14px; border: 1px solid var(--border-color); border-radius: 8px; }
+        .table-wrapper { overflow-x: auto; margin-top: 10px; border-radius: 8px; border: 1px solid var(--border-color); }
+        table { width: 100%; border-collapse: collapse; background: #fff; }
+        th, td { padding: 8px 10px; border-bottom: 1px solid var(--border-color); font-size: 12px; }
+        th { background-color: #f8fafc; color: var(--dark); }
+        body[dir="rtl"] table { text-align: right; }
+        body[dir="ltr"] table { text-align: left; }
+
+        .btn-main { width: 100%; background: var(--success); color: white; border: none; padding: 12px; font-size: 14px; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 10px; }
+        .btn-danger { background: var(--danger); color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; }
+        .btn-warning { background: var(--warning); color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; }
+
+        .grid-menu { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; margin-top: 15px; }
+        .grid-item {
+            background: #f8fafc; border: 1px solid var(--border-color); border-radius: 12px; padding: 15px 10px;
+            text-align: center; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; gap: 8px;
+        }
+        .grid-item:hover { background: #eff6ff; border-color: var(--primary); transform: translateY(-2px); }
+        .grid-item span { font-size: 22px; }
+        .grid-item p { font-size: 12px; font-weight: 600; color: var(--dark); }
+
+        .top-stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 10px; }
+        .top-stat-card { 
+            background: #fff; padding: 12px; border-radius: 12px; border: 1px solid var(--border-color); 
+            text-align: center; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .top-stat-card h4 { font-size: 11px; color: #64748b; margin-bottom: 5px; }
+        .top-stat-card span { font-size: 16px; font-weight: bold; }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); display: none; justify-content: center; align-items: center; z-index: 1000; }
+        .receipt-modal-card {
+            background: #ffffff; padding: 18px; border-radius: 12px; width: 95%; max-width: 420px;
+            font-family: 'Segoe UI', Arial, sans-serif; max-height: 90vh; overflow-y: auto; text-align: right;
+            border: 2px solid #1e3a8a; box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        @media print {
+            body * { visibility: hidden; }
+            #supplierTableArea, #supplierTableArea * { visibility: visible; }
+            #supplierTableArea { position: absolute; left: 0; top: 0; width: 100%; }
+        }
+
+        @media (max-width: 600px) {
+            .sidebar { width: 140px; }
+            .sidebar-header { font-size: 11px; padding: 10px 4px; }
+            .menu-item { font-size: 11px; padding: 10px 5px; }
+            body[dir="rtl"] .main-content { margin-right: 140px; }
+            body[dir="ltr"] .main-content { margin-left: 140px; }
+        }
+    </style>
+</head>
+<body dir="rtl">
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="login-overlay">
+        <div class="login-box">
+            <h2>🏪 سسټم ته ننوتل</h2>
+            <select id="loginUserSelect">
+                <option value="admin">اصلي مدیر (Admin)</option>
+            </select>
+            <input type="password" id="loginPassword" placeholder="رمز / Password (1234)">
+            <button class="btn-main" style="background: var(--primary);" onclick="attemptLogin()">ورننوځه (Login)</button>
+        </div>
+    </div>
+
+    <!-- Sidebar Menu -->
+    <div class="sidebar">
+        <div class="sidebar-header">🏪 سوپرمارکیټ POS</div>
+        <div class="user-info-bar">
+            <span>👤 کارمند:</span> <b id="currentUserDisplay">-</b><br>
+            <button onclick="logout()" style="margin-top: 5px; padding: 2px 6px; font-size: 10px; background: var(--danger); color: #fff; border: none; border-radius: 4px; cursor: pointer;">خروج</button>
+        </div>
+
+        <div style="padding: 10px; background: rgba(0,0,0,0.2);">
+            <select id="langSelector" onchange="changeLanguage(this.value)" style="width: 100%; padding: 6px; border-radius: 6px; font-size: 12px; background: #fff; color: #000;">
+                <option value="ps">پښتو (Pashto)</option>
+                <option value="ar">العربية (Arabic)</option>
+                <option value="en">English (انګرېزي)</option>
+            </select>
+        </div>
+        
+        <a class="menu-item active" onclick="showTab('dashboardTab')"><span>🏠 ډیشبورډ</span></a>
+        <a class="menu-item" onclick="showTab('posTab')"><span>🛒 پلور (POS)</span></a>
+        <a class="menu-item" onclick="showTab('suppliersTab')"><span>🚛 سپلائران</span></a>
+        <a class="menu-item" onclick="showTab('customersTab')"><span>⭐ مشتریان</span></a>
+        <a class="menu-item" onclick="showTab('shiftTab')"><span>⏱️ شفټ</span></a>
+        <a class="menu-item" onclick="showTab('inventoryTab')"><span>📦 انبار</span></a>
+        <a class="menu-item" onclick="showTab('reportsTab')"><span>📈 راپورونه</span></a>
+        <a class="menu-item" onclick="showTab('employeesTab')"><span>👥 کارمندان</span></a>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <div class="container">
+            
+            <!-- 1. Dashboard -->
+            <div id="dashboardTab" class="tab-content active">
+                <div class="card">
+                    <div class="top-stats-row">
+                        <!-- کم موجودي توکي -> زیړ رنګ -->
+                        <div class="top-stat-card" style="border-top: 4px solid var(--warning);">
+                            <h4>کم موجودي توکي</h4>
+                            <span id="dashLowStockCount" style="color: var(--warning);">0</span>
+                        </div>
+                        <!-- تاریخ تېر / نږدې توکي -> سور رنګ -->
+                        <div class="top-stat-card" style="border-top: 4px solid var(--danger);">
+                            <h4>تاریخ تېر / نږدې توکي</h4>
+                            <span id="dashExpiredCount" style="color: var(--danger);">0</span>
+                        </div>
+                    </div>
+
+                    <!-- د ډېشبورډ بټنې او شارټ کټونه -->
+                    <div class="grid-menu">
+                        <div class="grid-item" onclick="showTab('posTab')"><span>📷</span><p>سکنر</p></div>
+                        <div class="grid-item" onclick="showTab('suppliersTab')"><span>🚛</span><p>سپلائران</p></div>
+                        <div class="grid-item" onclick="showTab('inventoryTab')"><span>📦</span><p>موجودي</p></div>
+                        <div class="grid-item" onclick="showTab('dashboardTab')"><span>📊</span><p>ډېشبورډ</p></div>
+                        <div class="grid-item" onclick="showTab('posTab')"><span>📈</span><p>پلور</p></div>
+                        <div class="grid-item" onclick="showTab('customersTab')"><span>⭐</span><p>مشتریان</p></div>
+                        <div class="grid-item" onclick="showTab('shiftTab')"><span>⏱️</span><p>شفټ</p></div>
+                        <div class="grid-item" onclick="showTab('reportsTab')"><span>📋</span><p>راپورونه</p></div>
+                        <div class="grid-item" onclick="showTab('employeesTab')"><span>👥</span><p>کارمندان</p></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Suppliers -->
+            <div id="suppliersTab" class="tab-content">
+                <div class="card">
+                    <h3>🚛 د سپلائرانو (عرضه کوونکو) مدیریت</h3>
+                    <div class="form-grid" style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px;">
+                        <input type="text" id="supCompany" placeholder="د شرکت نوم / Company Name">
+                        <input type="text" id="supName" placeholder="د سپلائر نوم / Contact Person">
+                        <input type="text" id="supPhone" placeholder="تیلیفون / Phone Number">
+                        <input type="number" id="supBalance" placeholder="پخوانی باقیات/پور (SAR)">
+                        <button class="btn-main" style="background: var(--primary);" onclick="addSupplier()">+ نوی سپلائر ثبت کړه</button>
+                    </div>
+                </div>
+                <div class="card" id="supplierTableArea">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <h4>د سپلائرانو لیست</h4>
+                        <button class="btn-main" style="width: auto; background: var(--primary); font-size: 11px; margin:0; padding: 6px 10px;" onclick="window.print()">🖨️ سپلائر لیست پرنټ کړه</button>
+                    </div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>شرکت</th>
+                                    <th>سپلائر</th>
+                                    <th>شمېره</th>
+                                    <th>باقیات (پور)</th>
+                                    <th>عملیه</th>
+                                </tr>
+                            </thead>
+                            <tbody id="supplierTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Inventory -->
+            <div id="inventoryTab" class="tab-content">
+                <div class="card">
+                    <h3>📦 د انبار لیست</h3>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;">
+                        <input type="text" id="newProdBarcode" placeholder="بارکوډ" style="flex:1; padding:8px; border-radius:6px; border:1px solid #ccc;">
+                        <input type="text" id="newProdName" placeholder="د جنس نوم" style="flex:2; padding:8px; border-radius:6px; border:1px solid #ccc;">
+                        <input type="number" id="newProdPrice" placeholder="قیمت" style="flex:1; padding:8px; border-radius:6px; border:1px solid #ccc;">
+                        <input type="number" id="newProdStock" placeholder="تعداد" style="flex:1; padding:8px; border-radius:6px; border:1px solid #ccc;">
+                        <input type="date" id="newProdExpiry" placeholder="د ختمېدو نېټه" style="flex:1; padding:8px; border-radius:6px; border:1px solid #ccc;">
+                        <button class="btn-main" style="width:auto; margin:0;" onclick="addNewProduct()">ثبت</button>
+                    </div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr><th>بارکوډ</th><th>نوم</th><th>قیمت</th><th>تعداد</th><th>د ختمېدو نېټه</th></tr>
+                            </thead>
+                            <tbody id="inventoryTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. Customers -->
+            <div id="customersTab" class="tab-content">
+                <div class="card">
+                    <h3>⭐ د مشتریانو اداره</h3>
+                    <div class="form-grid" style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px;">
+                        <input type="text" id="custName" placeholder="نوم">
+                        <input type="text" id="custPhone" placeholder="تیلیفون">
+                        <button class="btn-main" style="background: var(--primary);" onclick="addCustomer()">ثبت</button>
+                    </div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead><tr><th>نوم</th><th>شمېره</th><th>پواینټونه</th></tr></thead>
+                            <tbody id="customerTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. POS Terminal -->
+            <div id="posTab" class="tab-content">
+                <div class="card">
+                    <h3>🛒 پلور (POS)</h3>
+                    <div class="search-box">
+                        <input type="text" id="barcodeInput" placeholder="بارکوډ سکین کړئ..." onkeypress="handleBarcodeInput(event)" autofocus>
+                    </div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead><tr><th>جنس</th><th>قیمت</th><th>تعداد</th><th>جمله</th><th>عملیه</th></tr></thead>
+                            <tbody id="cartTable"></tbody>
+                        </table>
+                    </div>
+                    <div style="margin-top: 10px; font-weight: bold; font-size: 16px;">ټولټال: <span id="grandTotal" style="color: var(--success);">0.00</span> SAR</div>
+                    <button class="btn-main" onclick="printReceipt()">بل خلاص کړه</button>
+                </div>
+            </div>
+
+            <!-- 6. Shift Management -->
+            <div id="shiftTab" class="tab-content">
+                <div class="card">
+                    <h3>⏱️ شفټ مدیریت</h3>
+                    <input type="number" id="shiftStartCash" placeholder="پیل نغدې (SAR)" style="margin-bottom: 10px; width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px;">
+                    <button class="btn-main" onclick="startShift()">شفټ خلاص کړه</button>
+                </div>
+            </div>
+
+            <!-- 7. Reports -->
+            <div id="reportsTab" class="tab-content">
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+                        <h3>📊 راپورونه او تحلیلونه</h3>
+                        <button class="btn-main" style="width: auto; background: var(--success); font-size: 12px; margin: 0; padding: 8px 12px;" onclick="exportToCSV()">📥 اکسل ته امپورټ</button>
+                    </div>
+                    <br>
+                    <div class="top-stats-row">
+                        <div class="top-stat-card" style="border-top: 4px solid var(--primary);" onclick="showSalesDetails()">
+                            <h4>ټول پلور (Sales)</h4>
+                            <span id="repTotalSales" style="color: var(--primary);">0.00 SAR</span>
+                        </div>
+                        <div class="top-stat-card" style="border-top: 4px solid #b45309;" onclick="showSalesDetails()">
+                            <h4>واجب زکات (2.5%)</h4>
+                            <span id="repZakat" style="color: #b45309;">0.00 SAR</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" id="salesDetailsCard" style="display: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <h4>📋 د پلور شویو فاکتورونو تفصیلي لیست</h4>
+                        <button class="btn-danger" style="width: auto;" onclick="document.getElementById('salesDetailsCard').style.display='none'">پټول</button>
+                    </div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>تاریخ / وخت</th>
+                                    <th>مجموعه (SAR)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="salesDetailsTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 8. Employees -->
+            <div id="employeesTab" class="tab-content">
+                <div class="card">
+                    <h3>👥 کارمندان</h3>
+                    <input type="text" id="empName" placeholder="نوم" style="width:100%; padding:10px; margin-bottom:8px; border:1px solid #ccc; border-radius:8px;">
+                    <input type="password" id="empPass" placeholder="رمز" style="width:100%; padding:10px; margin-bottom:8px; border:1px solid #ccc; border-radius:8px;">
+                    <button class="btn-main" style="background: var(--primary);" onclick="addEmployee()">اضافه کړه</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+<script>
+    let employees = JSON.parse(localStorage.getItem('pos_employees')) || [{ id: 'admin', name: 'اصلي مدیر', pass: '1234' }];
+    let customers = JSON.parse(localStorage.getItem('pos_customers')) || [];
+    let suppliers = JSON.parse(localStorage.getItem('pos_suppliers')) || [
+        { id: "1", company: "المراعي / Almarai", name: "احمد علي", phone: "0500000000", balance: 1500.00 }
+    ];
+    let dbProducts = JSON.parse(localStorage.getItem('pos_products')) || [
+        { id: "101", name: "کوکا کولا 1.5L", price: 23.0, stock: 3, expiry: "2025-01-01" },
+        { id: "102", name: "شېدې 1L", price: 11.0, stock: 15, expiry: "2028-06-01" }
+    ];
+    let salesHistory = JSON.parse(localStorage.getItem('pos_sales')) || [];
+    let cart = [];
+    let currentUser = null;
+
+    function attemptLogin() {
+        let pass = document.getElementById('loginPassword').value.trim();
+        if(pass === '1234' || pass === '') {
+            currentUser = employees[0];
+            document.getElementById('loginModal').style.display = 'none';
+            document.getElementById('currentUserDisplay').innerText = currentUser.name;
+            showTab('dashboardTab');
+            checkStockAlerts();
+        } else { alert("غلط رمز!"); }
+    }
+
+    function logout() { location.reload(); }
+
+    function showTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        let target = document.getElementById(tabId);
+        if(target) target.classList.add('active');
+        if(tabId === 'suppliersTab') renderSuppliers();
+        if(tabId === 'inventoryTab') renderInventory();
+        if(tabId === 'customersTab') renderCustomers();
+        if(tabId === 'reportsTab') loadReports();
+        if(tabId === 'dashboardTab') checkStockAlerts();
+    }
+
+    function checkStockAlerts() {
+        let today = new Date().toISOString().split('T')[0];
+        let lowStockCount = dbProducts.filter(p => p.stock <= 5).length;
+        let expiredCount = dbProducts.filter(p => p.expiry && p.expiry < today).length;
+        
+        let lowEl = document.getElementById('dashLowStockCount');
+        let expEl = document.getElementById('dashExpiredCount');
+        if(lowEl) lowEl.innerText = lowStockCount;
+        if(expEl) expEl.innerText = expiredCount;
+    }
+
+    function addSupplier() {
+        let company = document.getElementById('supCompany').value.trim();
+        let name = document.getElementById('supName').value.trim();
+        let phone = document.getElementById('supPhone').value.trim();
+        let balance = parseFloat(document.getElementById('supBalance').value) || 0;
+        if(!company || !name) return alert("معلومات پوره کړئ!");
+        suppliers.push({ id: Date.now().toString(), company, name, phone: phone || '-', balance });
+        localStorage.setItem('pos_suppliers', JSON.stringify(suppliers));
+        renderSuppliers();
+        document.getElementById('supCompany').value = '';
+        document.getElementById('supName').value = '';
+        document.getElementById('supPhone').value = '';
+        document.getElementById('supBalance').value = '';
+        alert("سپلائر ثبت شو!");
+    }
+
+    function renderSuppliers() {
+        let tbody = document.getElementById('supplierTable');
+        if(!tbody) return;
+        tbody.innerHTML = '';
+        suppliers.forEach((s, idx) => {
+            let waLink = s.phone !== '-' ? `https://wa.me/${s.phone.replace(/[^0-9]/g, '')}` : '#';
+            tbody.innerHTML += `
+                <tr>
+                    <td><b>${s.company}</b></td>
+                    <td>${s.name}</td>
+                    <td>${s.phone}</td>
+                    <td><b style="color:var(--danger);">${s.balance.toFixed(2)} SAR</b></td>
+                    <td>
+                        <a href="${waLink}" target="_blank" style="background:#25d366; color:#fff; padding:4px 8px; border-radius:4px; text-decoration:none; font-size:11px;">💬 واټساپ</a>
+                        <button class="btn-danger" onclick="suppliers.splice(${idx},1);localStorage.setItem('pos_suppliers', JSON.stringify(suppliers));renderSuppliers();">X</button>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    function addNewProduct() {
+        let id = document.getElementById('newProdBarcode').value.trim();
+        let name = document.getElementById('newProdName').value.trim();
+        let price = parseFloat(document.getElementById('newProdPrice').value) || 0;
+        let stock = parseInt(document.getElementById('newProdStock').value) || 0;
+        let expiry = document.getElementById('newProdExpiry').value;
+        if(!id || !name) return alert("بارکوډ او نوم ولیکئ!");
+        dbProducts.push({ id, name, price, stock, expiry: expiry || "2028-01-01" });
+        localStorage.setItem('pos_products', JSON.stringify(dbProducts));
+        renderInventory();
+        checkStockAlerts();
+        alert("جنس ثبت شو!");
+    }
+
+    function renderInventory() {
+        let tbody = document.getElementById('inventoryTable');
+        if(!tbody) return;
+        tbody.innerHTML = '';
+        dbProducts.forEach(p => {
+            tbody.innerHTML += `<tr><td>${p.id}</td><td>${p.name}</td><td>${p.price}</td><td><b>${p.stock}</b></td><td>${p.expiry || '-'}</td></tr>`;
+        });
+    }
+
+    function addCustomer() {
+        let name = document.getElementById('custName').value.trim();
+        let phone = document.getElementById('custPhone').value.trim();
+        if(!name) return alert("نوم ولیکئ!");
+        customers.push({ name, phone: phone || '-', points: 0 });
+        localStorage.setItem('pos_customers', JSON.stringify(customers));
+        renderCustomers();
+        alert("مشتری ثبت شو!");
+    }
+
+    function renderCustomers() {
+        let tbody = document.getElementById('customerTable');
+        if(!tbody) return;
+        tbody.innerHTML = '';
+        customers.forEach((c, idx) => {
+            tbody.innerHTML += `<tr><td>${c.name}</td><td>${c.phone}</td><td>${c.points}</td></tr>`;
+        });
+    }
+
+    function addEmployee() {
+        let name = document.getElementById('empName').value.trim();
+        let pass = document.getElementById('empPass').value.trim();
+        if(!name || !pass) return alert("نوم او رمز ولیکئ!");
+        employees.push({ id: Date.now().toString(), name, pass });
+        localStorage.setItem('pos_employees', JSON.stringify(employees));
+        alert("کارمند اضافه شو!");
+    }
+
+    function handleBarcodeInput(e) {
+        if (e.key === 'Enter') {
+            let code = e.target.value.trim();
+            let product = dbProducts.find(p => p.id === code || p.name.includes(code));
+            if(product) {
+                let item = cart.find(i => i.id === product.id);
+                if(item) item.qty++; else cart.push({ ...product, qty: 1 });
+                renderCart();
+            } else { alert("جنس ونه موندل شو!"); }
+            e.target.value = '';
+        }
+    }
+
+    function renderCart() {
+        let tbody = document.getElementById('cartTable');
+        if(!tbody) return;
+        tbody.innerHTML = '';
+        let subtotal = 0;
+        cart.forEach((i, idx) => {
+            subtotal += i.price * i.qty;
+            tbody.innerHTML += `<tr><td>${i.name}</td><td>${i.price}</td><td>${i.qty}</td><td>${(i.price*i.qty).toFixed(2)}</td><td><button class="btn-danger" onclick="cart.splice(${idx},1);renderCart();">X</button></td></tr>`;
+        });
+        let vat = subtotal * 0.15;
+        let finalTotal = subtotal + vat;
+        document.getElementById('grandTotal').innerText = finalTotal.toFixed(2);
+    }
+
+    function printReceipt() {
+        if(cart.length === 0) return alert("کارت تش دی!");
+        let subtotal = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+        let finalTotal = subtotal + (subtotal * 0.15);
+        salesHistory.push({ total: finalTotal, date: new Date().toLocaleString() });
+        localStorage.setItem('pos_sales', JSON.stringify(salesHistory));
+        alert("فاکتور ثبت او چاپ شو!");
+        cart = [];
+        renderCart();
+        loadReports();
+    }
+
+    function loadReports() {
+        let totalSales = salesHistory.reduce((s, a) => s + a.total, 0);
+        document.getElementById('repTotalSales').innerText = totalSales.toFixed(2) + ' SAR';
+        document.getElementById('repZakat').innerText = (totalSales * 0.025).toFixed(2) + ' SAR';
+    }
+
+    function showSalesDetails() {
+        let card = document.getElementById('salesDetailsCard');
+        let tbody = document.getElementById('salesDetailsTable');
+        card.style.display = 'block';
+        tbody.innerHTML = '';
+        if(salesHistory.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="2" style="text-align:center;">هیچ فاکتور ثبت شوی نشته</td></tr>`;
+            return;
+        }
+        salesHistory.forEach(s => {
+            tbody.innerHTML += `<tr><td>${s.date}</td><td><b>${s.total.toFixed(2)} SAR</b></td></tr>`;
+        });
+    }
+
+    function exportToCSV() {
+        if(salesHistory.length === 0) return alert("معلومات نشته!");
+        let csv = "\uFEFFTotal,Date\n";
+        salesHistory.forEach(s => csv += `"${s.total}","${s.date}"\n`);
+        let blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        let link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `Report.csv`;
+        link.click();
+    }
+
+    function changeLanguage(lang) {
+        localStorage.setItem('pos_lang', lang);
+    }
+
+    renderSuppliers();
+    checkStockAlerts();
+</script>
+</body>
+</html>
