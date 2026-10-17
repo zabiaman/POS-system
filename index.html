@@ -3,50 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>D-MART Enterprise Ultimate ERP & POS v16.0</title>
+    <title>D-MART Onyx Enterprise ERP & POS v17.0</title>
     
     <script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2/dist/quagga.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
     <style>
         :root {
-            --primary: #2563eb;
-            --primary-dark: #1d4ed8;
+            --onyx-primary: #1e3a8a;
+            --onyx-accent: #2563eb;
+            --onyx-dark: #0f172a;
             --success: #10b981;
             --warning: #f59e0b;
             --danger: #ef4444;
-            --dark-bg: #0f172a;
-            --card-bg: #ffffff;
             --app-bg: #f8fafc;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
+            --card-bg: #ffffff;
             --border: #cbd5e1;
+            --text-dark: #0f172a;
         }
 
         * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 0; }
-        body { background-color: var(--app-bg); color: var(--text-main); min-height: 100vh; padding-bottom: 75px; }
+        body { background-color: var(--app-bg); color: var(--text-dark); min-height: 100vh; padding-bottom: 75px; }
 
         .app-header {
-            background: linear-gradient(135deg, #0f172a, #1e293b); color: #fff;
+            background: linear-gradient(135deg, #0f172a, #1e3a8a); color: #fff;
             padding: 12px 16px; display: flex; justify-content: space-between; align-items: center;
-            position: sticky; top: 0; z-index: 500; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            position: sticky; top: 0; z-index: 500; box-shadow: 0 4px 15px rgba(0,0,0,0.25);
         }
-        .app-brand { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 15px; color: #38bdf8; }
+        .app-brand { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 15px; color: #60a5fa; }
 
         .container { padding: 12px; max-width: 900px; margin: 0 auto; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        .card { background: var(--card-bg); border-radius: 16px; padding: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid var(--border); margin-bottom: 12px; }
+        .card { background: var(--card-bg); border-radius: 16px; padding: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); border: 1px solid var(--border); margin-bottom: 12px; }
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .card-title { font-size: 13px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+        .card-title { font-size: 13px; font-weight: 800; display: flex; align-items: center; gap: 8px; color: var(--onyx-primary); }
 
         .form-control { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; font-size: 12px; margin-bottom: 8px; outline: none; }
-        .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+        .form-control:focus { border-color: var(--onyx-accent); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
 
-        .btn { width: 100%; padding: 10px; border: none; border-radius: 10px; font-weight: 700; font-size: 12px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 6px; }
-        .btn-primary { background: var(--primary); color: #fff; }
+        .btn { width: 100%; padding: 11px; border: none; border-radius: 10px; font-weight: 700; font-size: 12px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 6px; }
+        .btn-primary { background: var(--onyx-accent); color: #fff; }
         .btn-success { background: var(--success); color: #fff; }
         .btn-warning { background: var(--warning); color: #fff; }
         .btn-danger { background: var(--danger); color: #fff; }
@@ -56,17 +55,17 @@
         .stat-card.warning { border-top: 4px solid var(--warning); }
         .stat-card.danger { border-top: 4px solid var(--danger); }
         .stat-card.success { border-top: 4px solid var(--success); }
-        .stat-card h5 { font-size: 10px; color: var(--text-muted); margin-bottom: 4px; }
+        .stat-card h5 { font-size: 10px; color: #64748b; margin-bottom: 4px; }
         .stat-card .val { font-size: 18px; font-weight: 800; }
 
         .table-responsive { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); }
         table { width: 100%; border-collapse: collapse; background: #fff; font-size: 11px; }
         th, td { padding: 8px; border-bottom: 1px solid var(--border); text-align: right; }
-        th { background: #f8fafc; font-weight: 700; color: var(--text-muted); }
+        th { background: #f1f5f9; font-weight: 700; color: #475569; }
 
         .pay-methods { display: flex; gap: 8px; margin-bottom: 10px; }
         .pay-btn { flex: 1; padding: 10px; border: 1px solid var(--border); border-radius: 10px; text-align: center; cursor: pointer; font-weight: 700; font-size: 12px; background: #f8fafc; }
-        .pay-btn.active { background: #eff6ff; border-color: var(--primary); color: var(--primary); }
+        .pay-btn.active { background: #eff6ff; border-color: var(--onyx-accent); color: var(--onyx-accent); }
 
         .bottom-nav {
             position: fixed; bottom: 0; left: 0; right: 0; background: #ffffff;
@@ -75,10 +74,10 @@
         }
         .nav-tab {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            color: var(--text-muted); text-decoration: none; font-size: 10px; font-weight: 700; width: 20%; height: 100%; cursor: pointer;
+            color: #64748b; text-decoration: none; font-size: 10px; font-weight: 700; width: 20%; height: 100%; cursor: pointer;
         }
         .nav-tab i { font-size: 17px; margin-bottom: 2px; }
-        .nav-tab.active { color: var(--primary); }
+        .nav-tab.active { color: var(--onyx-accent); }
 
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 15px; }
         .modal-card { background: #fff; border-radius: 16px; padding: 18px; width: 100%; max-width: 400px; max-height: 85vh; overflow-y: auto; }
@@ -86,14 +85,14 @@
         @media print {
             body * { visibility: hidden; }
             #printableInvoice, #printableInvoice * { visibility: visible; }
-            #printableInvoice { position: absolute; left: 0; top: 0; width: 80mm; background: #fff; padding: 4mm; font-size: 11px; }
+            #printableInvoice { position: absolute; left: 0; top: 0; width: 80mm; background: #fff; padding: 4mm; font-size: 10px; font-family: monospace; }
         }
     </style>
 </head>
 <body>
 
     <header class="app-header">
-        <div class="app-brand"><i class="fa-solid fa-shop"></i> D-MART POS v16.0</div>
+        <div class="app-brand"><i class="fa-solid fa-layer-group"></i> ONYX ERP v17.0</div>
         <div><span style="font-size: 10px; opacity: 0.9;">الرقم الضريبي: 310596981900003</span></div>
     </header>
 
@@ -103,24 +102,24 @@
         <div id="dashboardTab" class="tab-content active">
             <div class="stats-grid">
                 <div class="stat-card warning" onclick="showTab('inventoryTab')">
-                    <h5>کم موجودي توکي</h5>
+                    <h5>کم موجودي (Low Stock)</h5>
                     <div class="val" id="dashLowStockCount" style="color: var(--warning);">0</div>
                 </div>
                 <div class="stat-card danger" onclick="showTab('inventoryTab')">
-                    <h5>تاریخ تېر توکي</h5>
+                    <h5>منتهي الصلاحية (Expired)</h5>
                     <div class="val" id="dashExpiredCount" style="color: var(--danger);">0</div>
                 </div>
             </div>
 
             <div class="card">
-                <div class="card-title" style="margin-bottom: 12px;"><i class="fa-solid fa-grid-2" style="color:var(--primary);"></i> <span>چټک لاسرسی (Modules)</span></div>
+                <div class="card-title" style="margin-bottom: 12px;"><i class="fa-solid fa-cubes"></i> <span>Onyx Core Modules</span></div>
                 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
-                    <button class="btn btn-primary" onclick="showTab('posTab')"><i class="fa-solid fa-cash-register"></i> پلور</button>
-                    <button class="btn btn-warning" onclick="showTab('inventoryTab')"><i class="fa-solid fa-boxes-stacked"></i> انبار</button>
-                    <button class="btn btn-success" onclick="showTab('suppliersTab')"><i class="fa-solid fa-truck"></i> سپلائران</button>
-                    <button class="btn btn-danger" onclick="showTab('reportsTab')"><i class="fa-solid fa-file-invoice-dollar"></i> راپورونه</button>
-                    <button class="btn btn-primary" style="background:#8b5cf6;" onclick="showTab('customersTab')"><i class="fa-solid fa-users"></i> مشتریان</button>
-                    <button class="btn btn-warning" style="background:#06b6d4;" onclick="downloadBackup()"><i class="fa-solid fa-database"></i> بیک اپ</button>
+                    <button class="btn btn-primary" onclick="showTab('posTab')"><i class="fa-solid fa-cash-register"></i> نقطة البيع (POS)</button>
+                    <button class="btn btn-warning" onclick="showTab('inventoryTab')"><i class="fa-solid fa-boxes-stacked"></i> المخزون</button>
+                    <button class="btn btn-success" onclick="showTab('suppliersTab')"><i class="fa-solid fa-truck"></i> الموردين</button>
+                    <button class="btn btn-danger" onclick="showTab('reportsTab')"><i class="fa-solid fa-chart-line"></i> التقارير</button>
+                    <button class="btn btn-primary" style="background:#8b5cf6;" onclick="showTab('customersTab')"><i class="fa-solid fa-users"></i> العملاء</button>
+                    <button class="btn btn-warning" style="background:#06b6d4;" onclick="downloadBackup()"><i class="fa-solid fa-database"></i> النسخ الاحتياطي</button>
                 </div>
             </div>
         </div>
@@ -128,57 +127,57 @@
         <!-- 2. POS TERMINAL -->
         <div id="posTab" class="tab-content">
             <div class="card">
-                <div class="card-title" style="margin-bottom:8px;"><i class="fa-solid fa-cart-shopping"></i> <span>د پلور ټرمينل (POS)</span></div>
-                <input type="text" id="barcodeInput" class="form-control" placeholder="بارکوډ سکین کړئ یا نوم ولیکئ..." onkeypress="handleBarcodeInput(event)" autofocus>
+                <div class="card-title" style="margin-bottom:8px;"><i class="fa-solid fa-cart-shopping"></i> <span>نقطة البيع والسداد السريع</span></div>
+                <input type="text" id="barcodeInput" class="form-control" placeholder="امسح البارشود أو اكتب الاسم..." onkeypress="handleBarcodeInput(event)" autofocus>
                 
                 <div class="table-responsive">
                     <table>
-                        <thead><tr><th>جنس</th><th>قیمت</th><th>تعداد</th><th>جمله</th><th>#</th></tr></thead>
+                        <thead><tr><th>الصنف</th><th>السعر</th><th>الكمية</th><th>المجموع</th><th>#</th></tr></thead>
                         <tbody id="cartTable"></tbody>
                     </table>
                 </div>
 
                 <div style="margin-top: 10px;">
-                    <p style="font-size:11px; font-weight:700; margin-bottom:5px;">د تادیې لاره:</p>
+                    <p style="font-size:11px; font-weight:700; margin-bottom:5px;">طريقة الدفع (Payment Method):</p>
                     <div class="pay-methods">
-                        <div class="pay-btn active" id="payCash" onclick="setPayMethod('CASH')"><i class="fa-solid fa-money-bill-wave"></i> نغدې (Cash)</div>
-                        <div class="pay-btn" id="payCard" onclick="setPayMethod('CARD')"><i class="fa-solid fa-credit-card"></i> کارت / مدی (Card)</div>
+                        <div class="pay-btn active" id="payCash" onclick="setPayMethod('CASH')"><i class="fa-solid fa-money-bill-wave"></i> نقداً (Cash)</div>
+                        <div class="pay-btn" id="payCard" onclick="setPayMethod('CARD')"><i class="fa-solid fa-credit-card"></i> مدى / شبكة (Mada/Card)</div>
                     </div>
                 </div>
 
                 <div style="margin-top:8px;">
-                    <input type="number" id="cashReceived" class="form-control" placeholder="اخستل شوي نغدې (SAR)" oninput="calculateChange()">
-                    <p style="font-size:12px; font-weight:bold; color:var(--danger); margin-bottom:8px;">باقي پيسې (Change): <span id="changeAmount">0.00</span> SAR</p>
+                    <input type="number" id="cashReceived" class="form-control" placeholder="المبلغ المقبوض (SAR)" oninput="calculateChange()">
+                    <p style="font-size:12px; font-weight:bold; color:var(--danger); margin-bottom:8px;">المتبقي (Change): <span id="changeAmount">0.00</span> SAR</p>
                 </div>
 
                 <div style="margin-top: 5px; display: flex; justify-content: space-between; font-weight: 800; font-size: 14px;">
-                    <span>ټولټال (VAT 15% شامل):</span>
+                    <span>الإجمالي (شامل الضريبة 15%):</span>
                     <span id="grandTotal" style="color: var(--success);">0.00 SAR</span>
                 </div>
 
-                <button class="btn btn-success" style="margin-top:10px;" onclick="printReceipt()"><i class="fa-solid fa-print"></i> بل خلاص او پرنټ کړه</button>
+                <button class="btn btn-success" style="margin-top:10px;" onclick="printReceipt()"><i class="fa-solid fa-print"></i> إصدار وطباعة الفاتورة (ZATCA)</button>
             </div>
         </div>
 
         <!-- 3. INVENTORY -->
         <div id="inventoryTab" class="tab-content">
             <div class="card">
-                <div class="card-title"><i class="fa-solid fa-boxes-stacked"></i> <span>د انبار او توکو مدیریت</span></div>
+                <div class="card-title"><i class="fa-solid fa-boxes-stacked"></i> <span>إدارة الاصناف والمخزون</span></div>
                 <div style="margin-top:10px; display:grid; grid-template-columns: 1fr 1fr; gap:6px;">
-                    <input type="text" id="newProdBarcode" class="form-control" placeholder="بارکوډ">
-                    <input type="text" id="newProdName" class="form-control" placeholder="د جنس نوم">
-                    <input type="number" id="newProdCost" class="form-control" placeholder="خرید قیمت">
-                    <input type="number" id="newProdPrice" class="form-control" placeholder="پلور قیمت">
-                    <input type="number" id="newProdStock" class="form-control" placeholder="تعداد">
+                    <input type="text" id="newProdBarcode" class="form-control" placeholder="البارکود">
+                    <input type="text" id="newProdName" class="form-control" placeholder="اسم الصنف">
+                    <input type="number" id="newProdCost" class="form-control" placeholder="سعر الشراء">
+                    <input type="number" id="newProdPrice" class="form-control" placeholder="سعر البيع">
+                    <input type="number" id="newProdStock" class="form-control" placeholder="الكمية">
                     <input type="date" id="newProdExpiry" class="form-control">
-                    <button class="btn btn-success" style="grid-column: span 2;" onclick="addNewProduct()"><i class="fa-solid fa-plus"></i> ثبت کړه</button>
+                    <button class="btn btn-success" style="grid-column: span 2;" onclick="addNewProduct()"><i class="fa-solid fa-plus"></i> إضافة للمخزون</button>
                 </div>
             </div>
 
             <div class="card">
                 <div class="table-responsive">
                     <table>
-                        <thead><tr><th>بارکوډ</th><th>نوم</th><th>خرید/پلور</th><th>تعداد</th><th>ختمېدو نېټه</th></tr></thead>
+                        <thead><tr><th>البارکود</th><th>اسم الصنف</th><th>شراء/بيع</th><th>الكمية</th><th>الصلاحية</th></tr></thead>
                         <tbody id="inventoryTable"></tbody>
                     </table>
                 </div>
@@ -188,19 +187,19 @@
         <!-- 4. SUPPLIERS -->
         <div id="suppliersTab" class="tab-content">
             <div class="card">
-                <div class="card-title"><i class="fa-solid fa-truck"></i> <span>د سپلائرانو (عرضه‌کوونکو) حسابونه</span></div>
+                <div class="card-title"><i class="fa-solid fa-truck"></i> <span>إدارة الموردين والحسابات</span></div>
                 <div style="margin-top:10px;">
-                    <input type="text" id="supCompany" class="form-control" placeholder="د شرکت نوم">
-                    <input type="text" id="supName" class="form-control" placeholder="مسئول شخص">
-                    <input type="text" id="supPhone" class="form-control" placeholder="تیلیفون شمیره">
-                    <input type="number" id="supBalance" class="form-control" placeholder="پخوانی پور (SAR)">
-                    <button class="btn btn-primary" onclick="addSupplier()"><i class="fa-solid fa-plus"></i> سپلائر ثبت کړه</button>
+                    <input type="text" id="supCompany" class="form-control" placeholder="اسم الشركة">
+                    <input type="text" id="supName" class="form-control" placeholder="الشخص المسؤول">
+                    <input type="text" id="supPhone" class="form-control" placeholder="رقم الهاتف">
+                    <input type="number" id="supBalance" class="form-control" placeholder="الرصيد السابق/الدين (SAR)">
+                    <button class="btn btn-primary" onclick="addSupplier()"><i class="fa-solid fa-plus"></i> حفظ المورد</button>
                 </div>
             </div>
             <div class="card">
                 <div class="table-responsive">
                     <table>
-                        <thead><tr><th>شرکت</th><th>سپلائر</th><th>شمېره</th><th>پور (باقیات)</th><th>عملیه</th></tr></thead>
+                        <thead><tr><th>الشركة</th><th>المسؤول</th><th>الهاتف</th><th>الدين</th><th>سداد</th></tr></thead>
                         <tbody id="supplierTable"></tbody>
                     </table>
                 </div>
@@ -210,15 +209,15 @@
         <!-- 5. CUSTOMERS -->
         <div id="customersTab" class="tab-content">
             <div class="card">
-                <div class="card-title"><i class="fa-solid fa-users"></i> <span>مشتریان</span></div>
-                <input type="text" id="custName" class="form-control" placeholder="نوم" style="margin-top:10px;">
-                <input type="text" id="custPhone" class="form-control" placeholder="تیلیفون">
-                <button class="btn btn-primary" onclick="addCustomer()">ثبت</button>
+                <div class="card-title"><i class="fa-solid fa-users"></i> <span>العملاء والنقاط</span></div>
+                <input type="text" id="custName" class="form-control" placeholder="اسم العميل" style="margin-top:10px;">
+                <input type="text" id="custPhone" class="form-control" placeholder="رقم الجوال">
+                <button class="btn btn-primary" onclick="addCustomer()">حفظ العميل</button>
             </div>
             <div class="card">
                 <div class="table-responsive">
                     <table>
-                        <thead><tr><th>نوم</th><th>شمېره</th><th>پواینټونه</th></tr></thead>
+                        <thead><tr><th>الاسم</th><th>الجوال</th><th>النقاط</th></tr></thead>
                         <tbody id="customerTable"></tbody>
                     </table>
                 </div>
@@ -229,26 +228,26 @@
         <div id="reportsTab" class="tab-content">
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title"><i class="fa-solid fa-file-invoice-dollar"></i> <span>مالي راپورونه او فاکتورونه</span></div>
-                    <button class="btn btn-success" style="width:auto; padding:4px 8px; font-size:10px;" onclick="exportToCSV()">اکسل (CSV)</button>
+                    <div class="card-title"><i class="fa-solid fa-chart-line"></i> <span>التقارير المالية والأرباح</span></div>
+                    <button class="btn btn-success" style="width:auto; padding:4px 8px; font-size:10px;" onclick="exportToCSV()">تصدير Excel</button>
                 </div>
                 <div class="stats-grid">
                     <div class="stat-card success">
-                        <h5>ټول پلور</h5>
+                        <h5>إجمالي المبيعات</h5>
                         <div class="val" id="repTotalSales" style="color:var(--success);">0.00 SAR</div>
                     </div>
                     <div class="stat-card warning">
-                        <h5>خالصه تخمیني ګټه</h5>
+                        <h5>صافي الأرباح</h5>
                         <div class="val" id="repNetProfit" style="color:var(--warning);">0.00 SAR</div>
                     </div>
                 </div>
             </div>
 
             <div class="card">
-                <div class="card-title" style="margin-bottom:8px;">📋 د ثبت شویو فاکتورونو لېست</div>
+                <div class="card-title" style="margin-bottom:8px;">📋 سجل الفواتير الصادرة</div>
                 <div class="table-responsive">
                     <table>
-                        <thead><tr><th>تاریخ</th><th>تادیه</th><th>مجموعه</th><th>تفصیل</th></tr></thead>
+                        <thead><tr><th>التاريخ</th><th>الدفع</th><th>المبلغ</th><th>التفاصيل</th></tr></thead>
                         <tbody id="salesReportTable"></tbody>
                     </table>
                 </div>
@@ -257,40 +256,42 @@
 
     </div>
 
-    <!-- Invoice Detail Modal -->
+    <!-- Invoice Modal -->
     <div id="invoiceModal" class="modal-overlay">
         <div class="modal-card">
             <div class="card-header">
-                <div class="card-title">🧾 د فاکتور تفصیلات</div>
+                <div class="card-title">🧾 تفاصيل الفاتورة</div>
                 <button class="btn btn-danger" style="width:auto; padding:2px 6px;" onclick="document.getElementById('invoiceModal').style.display='none'">X</button>
             </div>
             <div id="modalInvoiceDetails" style="font-size:12px; margin-bottom:10px;"></div>
-            <button class="btn btn-primary" onclick="window.print()"><i class="fa-solid fa-print"></i> پرنټ کړه</button>
+            <button class="btn btn-primary" onclick="window.print()"><i class="fa-solid fa-print"></i> طباعة الفاتورة</button>
         </div>
     </div>
 
-    <!-- Printable Thermal Invoice Structure -->
+    <!-- Printable Thermal ZATCA Invoice -->
     <div id="printableInvoice" style="display:none;">
         <div style="text-align:center;">
             <h3>D-MART SUPERMARKET</h3>
-            <p>فاتورة ضريبية مبسطة / Tax Invoice</p>
-            <p><b>الرقم الضريبي: 310596981900003</b></p>
-            <hr style="margin:5px 0;">
+            <p style="font-size:10px;">سوبرماركت دي مارت</p>
+            <p style="font-size:9px;">فاتورة ضريبية مبسطة / Tax Invoice</p>
+            <p style="font-size:9px;"><b>الرقم الضريبي: 310596981900003</b></p>
+            <hr style="margin:4px 0;">
         </div>
-        <div id="invoiceContent" style="margin-top:8px;"></div>
-        <hr style="margin:5px 0;">
-        <div style="text-align:center;">
-            <p>مننې / شكراً لزيارتكم</p>
+        <div id="invoiceContent" style="margin-top:6px;"></div>
+        <div id="qrcode" style="display:flex; justify-content:center; margin-top:8px;"></div>
+        <hr style="margin:4px 0;">
+        <div style="text-align:center; font-size:9px;">
+            <p>شكراً لزيارتكم / Thank you</p>
         </div>
     </div>
 
     <!-- Bottom Nav -->
     <nav class="bottom-nav">
-        <a class="nav-tab active" onclick="showTab('dashboardTab')"><i class="fa-solid fa-house"></i><span>کورپاڼه</span></a>
-        <a class="nav-tab" onclick="showTab('posTab')"><i class="fa-solid fa-cart-shopping"></i><span>پلور</span></a>
-        <a class="nav-tab" onclick="showTab('suppliersTab')"><i class="fa-solid fa-truck"></i><span>سپلائران</span></a>
-        <a class="nav-tab" onclick="showTab('inventoryTab')"><i class="fa-solid fa-boxes-stacked"></i><span>انبار</span></a>
-        <a class="nav-tab" onclick="showTab('reportsTab')"><i class="fa-solid fa-chart-pie"></i><span>راپورونه</span></a>
+        <a class="nav-tab active" onclick="showTab('dashboardTab')"><i class="fa-solid fa-house"></i><span>الرئيسية</span></a>
+        <a class="nav-tab" onclick="showTab('posTab')"><i class="fa-solid fa-cart-shopping"></i><span>المبيعات</span></a>
+        <a class="nav-tab" onclick="showTab('suppliersTab')"><i class="fa-solid fa-truck"></i><span>الموردين</span></a>
+        <a class="nav-tab" onclick="showTab('inventoryTab')"><i class="fa-solid fa-boxes-stacked"></i><span>المخزون</span></a>
+        <a class="nav-tab" onclick="showTab('reportsTab')"><i class="fa-solid fa-chart-line"></i><span>التقارير</span></a>
     </nav>
 
 <script>
@@ -335,21 +336,19 @@
         let name = document.getElementById('supName').value.trim();
         let phone = document.getElementById('supPhone').value.trim();
         let balance = parseFloat(document.getElementById('supBalance').value) || 0;
-        if(!company || !name) return alert("معلومات پوره کړئ!");
+        if(!company || !name) return alert("الرجاء استكمال البيانات!");
         suppliers.push({ id: Date.now().toString(), company, name, phone: phone || '-', balance });
         localStorage.setItem('pos_suppliers', JSON.stringify(suppliers));
         renderSuppliers();
-        alert("سپلائر ثبت شو!");
     }
 
     function paySupplierDebt(idx) {
-        let amt = parseFloat(prompt("ورکړل شوې پېسې (SAR):")) || 0;
+        let amt = parseFloat(prompt("المبلغ المدفوع للمورد (SAR):")) || 0;
         if(amt > 0) {
             suppliers[idx].balance -= amt;
             if(suppliers[idx].balance < 0) suppliers[idx].balance = 0;
             localStorage.setItem('pos_suppliers', JSON.stringify(suppliers));
             renderSuppliers();
-            alert("تادیه ثبت شوه!");
         }
     }
 
@@ -357,7 +356,7 @@
         let tbody = document.getElementById('supplierTable');
         if(!tbody) return; tbody.innerHTML = '';
         suppliers.forEach((s, idx) => {
-            tbody.innerHTML += `<tr><td><b>${s.company}</b></td><td>${s.name}</td><td>${s.phone}</td><td><b style="color:var(--danger);">${s.balance.toFixed(2)} SAR</b></td><td><button class="btn btn-success" style="padding:2px 6px; font-size:10px;" onclick="paySupplierDebt(${idx})">تادیه</button></td></tr>`;
+            tbody.innerHTML += `<tr><td><b>${s.company}</b></td><td>${s.name}</td><td>${s.phone}</td><td><b style="color:var(--danger);">${s.balance.toFixed(2)} SAR</b></td><td><button class="btn btn-success" style="padding:2px 6px; font-size:10px;" onclick="paySupplierDebt(${idx})">سداد</button></td></tr>`;
         });
     }
 
@@ -368,11 +367,10 @@
         let price = parseFloat(document.getElementById('newProdPrice').value) || 0;
         let stock = parseInt(document.getElementById('newProdStock').value) || 0;
         let expiry = document.getElementById('newProdExpiry').value;
-        if(!id || !name) return alert("معلومات ولیکئ!");
+        if(!id || !name) return alert("الرجاء استكمال البيانات!");
         dbProducts.push({ id, name, cost, price, stock, expiry: expiry || "2028-01-01" });
         localStorage.setItem('pos_products', JSON.stringify(dbProducts));
         renderInventory(); checkStockAlerts();
-        alert("جنس ثبت شو!");
     }
 
     function renderInventory() {
@@ -391,7 +389,7 @@
                 let item = cart.find(i => i.id === product.id);
                 if(item) item.qty++; else cart.push({ ...product, qty: 1 });
                 renderCart();
-            } else { alert("جنس ونه موندل شو!"); }
+            } else { alert("الصنف غير موجود!"); }
             e.target.value = '';
         }
     }
@@ -405,8 +403,7 @@
             tbody.innerHTML += `<tr><td>${i.name}</td><td>${i.price}</td><td>${i.qty}</td><td>${(i.price*i.qty).toFixed(2)}</td><td><button class="btn-danger" style="padding:2px 5px;" onclick="cart.splice(${idx},1);renderCart();">X</button></td></tr>`;
         });
         let vat = subtotal * 0.15;
-        let final = subtotal + vat;
-        document.getElementById('grandTotal').innerText = final.toFixed(2) + ' SAR';
+        document.getElementById('grandTotal').innerText = (subtotal + vat).toFixed(2) + ' SAR';
         calculateChange();
     }
 
@@ -419,13 +416,15 @@
     }
 
     function printReceipt() {
-        if(cart.length === 0) return alert("کارت تش دی!");
+        if(cart.length === 0) return alert("السلة فارغة!");
         let subtotal = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
         let totalCost = cart.reduce((sum, i) => sum + ((i.cost || 0) * i.qty), 0);
-        let finalTotal = subtotal + (subtotal * 0.15);
+        let vatAmt = subtotal * 0.15;
+        let finalTotal = subtotal + vatAmt;
         
+        let invId = "INV-" + Date.now().toString().slice(-5);
         let saleObj = {
-            id: "INV-" + Date.now().toString().slice(-5),
+            id: invId,
             items: [...cart],
             method: currentPayMethod,
             total: finalTotal,
@@ -435,20 +434,29 @@
 
         salesHistory.push(saleObj);
         localStorage.setItem('pos_sales', JSON.stringify(salesHistory));
-        
-        // Prepare Printable View
+
         document.getElementById('invoiceContent').innerHTML = `
-            <p><b>فاکتور:</b> ${saleObj.id}</p>
-            <p><b>نېټه:</b> ${saleObj.date}</p>
-            <p><b>تادیه:</b> ${saleObj.method}</p>
+            <p><b>رقم الفاتورة:</b> ${invId}</p>
+            <p><b>التاريخ:</b> ${saleObj.date}</p>
+            <p><b>طريقة الدفع:</b> ${saleObj.method}</p>
             <hr style="margin:4px 0;">
-            <table style="width:100%; font-size:10px;">
-                <tr><th>جنس</th><th>تعداد</th><th>جمله</th></tr>
+            <table style="width:100%; font-size:9px;">
+                <tr><th>الصنف</th><th>الكمية</th><th>المجموع</th></tr>
                 ${cart.map(i => `<tr><td>${i.name}</td><td>${i.qty}</td><td>${(i.price*i.qty).toFixed(2)}</td></tr>`).join('')}
             </table>
             <hr style="margin:4px 0;">
-            <p><b>مجموعه (شامل 15% VAT):</b> ${finalTotal.toFixed(2)} SAR</p>
+            <p><b>المبلغ الخاضع للضريبة:</b> ${subtotal.toFixed(2)} SAR</p>
+            <p><b>ضريبة القيمة المضافة 15%:</b> ${vatAmt.toFixed(2)} SAR</p>
+            <p style="font-size:11px; font-weight:bold;"><b>الإجمالي النهائي:</b> ${finalTotal.toFixed(2)} SAR</p>
         `;
+
+        // Render ZATCA QR Code
+        let qrContainer = document.getElementById('qrcode');
+        qrContainer.innerHTML = '';
+        let qrData = `D-MART|VAT:310596981900003|DATE:${saleObj.date}|TOTAL:${finalTotal.toFixed(2)}|VAT:${vatAmt.toFixed(2)}`;
+        QRCode.toCanvas(qrData, { width: 90 }, function (err, canvas) {
+            if (!err) qrContainer.appendChild(canvas);
+        });
 
         window.print();
         cart = []; renderCart(); loadReports();
@@ -463,7 +471,7 @@
         let tbody = document.getElementById('salesReportTable');
         if(!tbody) return; tbody.innerHTML = '';
         salesHistory.forEach((s, idx) => {
-            tbody.innerHTML += `<tr><td>${s.date}</td><td><b>${s.method || 'CASH'}</b></td><td>${s.total.toFixed(2)} SAR</td><td><button class="btn btn-primary" style="padding:2px 6px; font-size:10px;" onclick="viewInvoiceDetail(${idx})">لیدل</button></td></tr>`;
+            tbody.innerHTML += `<tr><td>${s.date}</td><td><b>${s.method || 'CASH'}</b></td><td>${s.total.toFixed(2)} SAR</td><td><button class="btn btn-primary" style="padding:2px 6px; font-size:10px;" onclick="viewInvoiceDetail(${idx})">عرض</button></td></tr>`;
         });
     }
 
@@ -472,16 +480,16 @@
         let modal = document.getElementById('invoiceModal');
         let det = document.getElementById('modalInvoiceDetails');
         det.innerHTML = `
-            <p><b>فاکتور ګڼه:</b> ${s.id || 'N/A'}</p>
-            <p><b>نېټه:</b> ${s.date}</p>
-            <p><b>د تادیې لاره:</b> ${s.method || 'CASH'}</p>
+            <p><b>رقم الفاتورة:</b> ${s.id || 'N/A'}</p>
+            <p><b>التاريخ:</b> ${s.date}</p>
+            <p><b>طريقة الدفع:</b> ${s.method || 'CASH'}</p>
             <hr style="margin:5px 0;">
             <table style="width:100%;">
-                <tr><th>جنس</th><th>تعداد</th><th>قیمت</th></tr>
+                <tr><th>الصنف</th><th>الكمية</th><th>السعر</th></tr>
                 ${s.items.map(i => `<tr><td>${i.name}</td><td>${i.qty}</td><td>${(i.price*i.qty).toFixed(2)}</td></tr>`).join('')}
             </table>
             <hr style="margin:5px 0;">
-            <p style="font-size:14px; font-weight:bold;">مجموعه: ${s.total.toFixed(2)} SAR</p>
+            <p style="font-size:14px; font-weight:bold;">المجموع: ${s.total.toFixed(2)} SAR</p>
         `;
         modal.style.display = 'flex';
     }
@@ -491,11 +499,11 @@
         let blob = new Blob([JSON.stringify(backupData)], { type: 'application/json' });
         let link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
-        link.download = `DMART_Backup_${Date.now()}.json`; link.click();
+        link.download = `DMART_Onyx_Backup_${Date.now()}.json`; link.click();
     }
 
     function exportToCSV() {
-        if(salesHistory.length === 0) return alert("معلومات نشته!");
+        if(salesHistory.length === 0) return alert("لا توجد بيانات!");
         let csv = "\uFEFFInvoice,Total,Method,Date\n";
         salesHistory.forEach(s => csv += `"${s.id || ''}","${s.total}","${s.method || ''}","${s.date}"\n`);
         let blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -507,11 +515,10 @@
     function addCustomer() {
         let name = document.getElementById('custName').value.trim();
         let phone = document.getElementById('custPhone').value.trim();
-        if(!name) return alert("نوم ولیکئ!");
+        if(!name) return alert("الرجاء استكمال البيانات!");
         customers.push({ name, phone: phone || '-', points: 0 });
         localStorage.setItem('pos_customers', JSON.stringify(customers));
         renderCustomers();
-        alert("مشتری ثبت شو!");
     }
 
     function renderCustomers() {
