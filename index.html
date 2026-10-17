@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>D-MART Professional Enterprise POS & ERP</title>
+    <title>D-MART Enterprise Ultimate ERP & POS v16.0</title>
     
     <script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2/dist/quagga.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -18,7 +18,7 @@
             --danger: #ef4444;
             --dark-bg: #0f172a;
             --card-bg: #ffffff;
-            --app-bg: #f1f5f9;
+            --app-bg: #f8fafc;
             --text-main: #0f172a;
             --text-muted: #64748b;
             --border: #cbd5e1;
@@ -86,15 +86,15 @@
         @media print {
             body * { visibility: hidden; }
             #printableInvoice, #printableInvoice * { visibility: visible; }
-            #printableInvoice { position: absolute; left: 0; top: 0; width: 80mm; background: #fff; padding: 2mm; font-size: 10px; }
+            #printableInvoice { position: absolute; left: 0; top: 0; width: 80mm; background: #fff; padding: 4mm; font-size: 11px; }
         }
     </style>
 </head>
 <body>
 
     <header class="app-header">
-        <div class="app-brand"><i class="fa-solid fa-shop"></i> D-MART Professional POS</div>
-        <div><span style="font-size: 11px; opacity: 0.9;">الرقم الضريبي: 310596981900003</span></div>
+        <div class="app-brand"><i class="fa-solid fa-shop"></i> D-MART POS v16.0</div>
+        <div><span style="font-size: 10px; opacity: 0.9;">الرقم الضريبي: 310596981900003</span></div>
     </header>
 
     <div class="container">
@@ -113,9 +113,9 @@
             </div>
 
             <div class="card">
-                <div class="card-title" style="margin-bottom: 12px;"><i class="fa-solid fa-grid-2" style="color:var(--primary);"></i> <span>اصلي څانګې</span></div>
+                <div class="card-title" style="margin-bottom: 12px;"><i class="fa-solid fa-grid-2" style="color:var(--primary);"></i> <span>چټک لاسرسی (Modules)</span></div>
                 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
-                    <button class="btn btn-primary" onclick="showTab('posTab')"><i class="fa-solid fa-cash-register"></i> پلور (POS)</button>
+                    <button class="btn btn-primary" onclick="showTab('posTab')"><i class="fa-solid fa-cash-register"></i> پلور</button>
                     <button class="btn btn-warning" onclick="showTab('inventoryTab')"><i class="fa-solid fa-boxes-stacked"></i> انبار</button>
                     <button class="btn btn-success" onclick="showTab('suppliersTab')"><i class="fa-solid fa-truck"></i> سپلائران</button>
                     <button class="btn btn-danger" onclick="showTab('reportsTab')"><i class="fa-solid fa-file-invoice-dollar"></i> راپورونه</button>
@@ -129,7 +129,7 @@
         <div id="posTab" class="tab-content">
             <div class="card">
                 <div class="card-title" style="margin-bottom:8px;"><i class="fa-solid fa-cart-shopping"></i> <span>د پلور ټرمينل (POS)</span></div>
-                <input type="text" id="barcodeInput" class="form-control" placeholder="بارکوډ سکین کړئ..." onkeypress="handleBarcodeInput(event)" autofocus>
+                <input type="text" id="barcodeInput" class="form-control" placeholder="بارکوډ سکین کړئ یا نوم ولیکئ..." onkeypress="handleBarcodeInput(event)" autofocus>
                 
                 <div class="table-responsive">
                     <table>
@@ -139,14 +139,19 @@
                 </div>
 
                 <div style="margin-top: 10px;">
-                    <p style="font-size:11px; font-weight:700; margin-bottom:5px;">د تادیې لاره (Payment Method):</p>
+                    <p style="font-size:11px; font-weight:700; margin-bottom:5px;">د تادیې لاره:</p>
                     <div class="pay-methods">
                         <div class="pay-btn active" id="payCash" onclick="setPayMethod('CASH')"><i class="fa-solid fa-money-bill-wave"></i> نغدې (Cash)</div>
                         <div class="pay-btn" id="payCard" onclick="setPayMethod('CARD')"><i class="fa-solid fa-credit-card"></i> کارت / مدی (Card)</div>
                     </div>
                 </div>
 
-                <div style="margin-top: 10px; display: flex; justify-content: space-between; font-weight: 800; font-size: 14px;">
+                <div style="margin-top:8px;">
+                    <input type="number" id="cashReceived" class="form-control" placeholder="اخستل شوي نغدې (SAR)" oninput="calculateChange()">
+                    <p style="font-size:12px; font-weight:bold; color:var(--danger); margin-bottom:8px;">باقي پيسې (Change): <span id="changeAmount">0.00</span> SAR</p>
+                </div>
+
+                <div style="margin-top: 5px; display: flex; justify-content: space-between; font-weight: 800; font-size: 14px;">
                     <span>ټولټال (VAT 15% شامل):</span>
                     <span id="grandTotal" style="color: var(--success);">0.00 SAR</span>
                 </div>
@@ -158,13 +163,13 @@
         <!-- 3. INVENTORY -->
         <div id="inventoryTab" class="tab-content">
             <div class="card">
-                <div class="card-title"><i class="fa-solid fa-boxes-stacked"></i> <span>د انبار او اجناسو مدیریت</span></div>
+                <div class="card-title"><i class="fa-solid fa-boxes-stacked"></i> <span>د انبار او توکو مدیریت</span></div>
                 <div style="margin-top:10px; display:grid; grid-template-columns: 1fr 1fr; gap:6px;">
                     <input type="text" id="newProdBarcode" class="form-control" placeholder="بارکوډ">
                     <input type="text" id="newProdName" class="form-control" placeholder="د جنس نوم">
                     <input type="number" id="newProdCost" class="form-control" placeholder="خرید قیمت">
                     <input type="number" id="newProdPrice" class="form-control" placeholder="پلور قیمت">
-                    <input type="number" id="newProdStock" class="form-control" placeholder="تعداد (داني)">
+                    <input type="number" id="newProdStock" class="form-control" placeholder="تعداد">
                     <input type="date" id="newProdExpiry" class="form-control">
                     <button class="btn btn-success" style="grid-column: span 2;" onclick="addNewProduct()"><i class="fa-solid fa-plus"></i> ثبت کړه</button>
                 </div>
@@ -180,23 +185,22 @@
             </div>
         </div>
 
-        <!-- 4. SUPPLIERS (پرمختللی سیستم) -->
+        <!-- 4. SUPPLIERS -->
         <div id="suppliersTab" class="tab-content">
             <div class="card">
-                <div class="card-title"><i class="fa-solid fa-truck"></i> <span>د سپلائرانو (عرضه کوونکو) بشپړ سیستم</span></div>
+                <div class="card-title"><i class="fa-solid fa-truck"></i> <span>د سپلائرانو (عرضه‌کوونکو) حسابونه</span></div>
                 <div style="margin-top:10px;">
                     <input type="text" id="supCompany" class="form-control" placeholder="د شرکت نوم">
                     <input type="text" id="supName" class="form-control" placeholder="مسئول شخص">
                     <input type="text" id="supPhone" class="form-control" placeholder="تیلیفون شمیره">
                     <input type="number" id="supBalance" class="form-control" placeholder="پخوانی پور (SAR)">
-                    <button class="btn btn-primary" onclick="addSupplier()"><i class="fa-solid fa-plus"></i> نوی سپلائر ثبت کړه</button>
+                    <button class="btn btn-primary" onclick="addSupplier()"><i class="fa-solid fa-plus"></i> سپلائر ثبت کړه</button>
                 </div>
             </div>
             <div class="card">
-                <div class="card-title" style="margin-bottom:8px;">د ثبت شویو سپلائرانو لیست او معاملې</div>
                 <div class="table-responsive">
                     <table>
-                        <thead><tr><th>شرکت</th><th>سپلائر</th><th>شمېره</th><th>باقیات (پور)</th><th>تادیه / عملیه</th></tr></thead>
+                        <thead><tr><th>شرکت</th><th>سپلائر</th><th>شمېره</th><th>پور (باقیات)</th><th>عملیه</th></tr></thead>
                         <tbody id="supplierTable"></tbody>
                     </table>
                 </div>
@@ -221,11 +225,11 @@
             </div>
         </div>
 
-        <!-- 6. REPORTS & INVOICE DETAILS -->
+        <!-- 6. REPORTS -->
         <div id="reportsTab" class="tab-content">
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title"><i class="fa-solid fa-file-invoice-dollar"></i> <span>مالي راپورونه او د فاکتورونو تفصیلي لېست</span></div>
+                    <div class="card-title"><i class="fa-solid fa-file-invoice-dollar"></i> <span>مالي راپورونه او فاکتورونه</span></div>
                     <button class="btn btn-success" style="width:auto; padding:4px 8px; font-size:10px;" onclick="exportToCSV()">اکسل (CSV)</button>
                 </div>
                 <div class="stats-grid">
@@ -241,7 +245,7 @@
             </div>
 
             <div class="card">
-                <div class="card-title" style="margin-bottom:8px;">📋 ثبت شوي فاکتورونه (د تفصیل لپاره کلیک وکړئ)</div>
+                <div class="card-title" style="margin-bottom:8px;">📋 د ثبت شویو فاکتورونو لېست</div>
                 <div class="table-responsive">
                     <table>
                         <thead><tr><th>تاریخ</th><th>تادیه</th><th>مجموعه</th><th>تفصیل</th></tr></thead>
@@ -268,7 +272,7 @@
     <!-- Printable Thermal Invoice Structure -->
     <div id="printableInvoice" style="display:none;">
         <div style="text-align:center;">
-            <h3>سوپرمارکیټ D-MART</h3>
+            <h3>D-MART SUPERMARKET</h3>
             <p>فاتورة ضريبية مبسطة / Tax Invoice</p>
             <p><b>الرقم الضريبي: 310596981900003</b></p>
             <hr style="margin:5px 0;">
@@ -335,10 +339,11 @@
         suppliers.push({ id: Date.now().toString(), company, name, phone: phone || '-', balance });
         localStorage.setItem('pos_suppliers', JSON.stringify(suppliers));
         renderSuppliers();
+        alert("سپلائر ثبت شو!");
     }
 
     function paySupplierDebt(idx) {
-        let amt = parseFloat(prompt("کومې پیسې ورکول غواړئ؟ (SAR):")) || 0;
+        let amt = parseFloat(prompt("ورکړل شوې پېسې (SAR):")) || 0;
         if(amt > 0) {
             suppliers[idx].balance -= amt;
             if(suppliers[idx].balance < 0) suppliers[idx].balance = 0;
@@ -352,7 +357,7 @@
         let tbody = document.getElementById('supplierTable');
         if(!tbody) return; tbody.innerHTML = '';
         suppliers.forEach((s, idx) => {
-            tbody.innerHTML += `<tr><td><b>${s.company}</b></td><td>${s.name}</td><td>${s.phone}</td><td><b style="color:var(--danger);">${s.balance.toFixed(2)} SAR</b></td><td><button class="btn btn-success" style="padding:2px 6px; font-size:10px;" onclick="paySupplierDebt(${idx})">تادیه (Pay)</button></td></tr>`;
+            tbody.innerHTML += `<tr><td><b>${s.company}</b></td><td>${s.name}</td><td>${s.phone}</td><td><b style="color:var(--danger);">${s.balance.toFixed(2)} SAR</b></td><td><button class="btn btn-success" style="padding:2px 6px; font-size:10px;" onclick="paySupplierDebt(${idx})">تادیه</button></td></tr>`;
         });
     }
 
@@ -367,6 +372,7 @@
         dbProducts.push({ id, name, cost, price, stock, expiry: expiry || "2028-01-01" });
         localStorage.setItem('pos_products', JSON.stringify(dbProducts));
         renderInventory(); checkStockAlerts();
+        alert("جنس ثبت شو!");
     }
 
     function renderInventory() {
@@ -399,7 +405,17 @@
             tbody.innerHTML += `<tr><td>${i.name}</td><td>${i.price}</td><td>${i.qty}</td><td>${(i.price*i.qty).toFixed(2)}</td><td><button class="btn-danger" style="padding:2px 5px;" onclick="cart.splice(${idx},1);renderCart();">X</button></td></tr>`;
         });
         let vat = subtotal * 0.15;
-        document.getElementById('grandTotal').innerText = (subtotal + vat).toFixed(2) + ' SAR';
+        let final = subtotal + vat;
+        document.getElementById('grandTotal').innerText = final.toFixed(2) + ' SAR';
+        calculateChange();
+    }
+
+    function calculateChange() {
+        let subtotal = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+        let finalTotal = subtotal + (subtotal * 0.15);
+        let received = parseFloat(document.getElementById('cashReceived').value) || 0;
+        let change = received - finalTotal;
+        document.getElementById('changeAmount').innerText = change >= 0 ? change.toFixed(2) : "0.00";
     }
 
     function printReceipt() {
@@ -419,7 +435,22 @@
 
         salesHistory.push(saleObj);
         localStorage.setItem('pos_sales', JSON.stringify(salesHistory));
-        alert("فاکتور ثبت شو! ټولټال: " + finalTotal.toFixed(2) + " SAR (" + currentPayMethod + ")");
+        
+        // Prepare Printable View
+        document.getElementById('invoiceContent').innerHTML = `
+            <p><b>فاکتور:</b> ${saleObj.id}</p>
+            <p><b>نېټه:</b> ${saleObj.date}</p>
+            <p><b>تادیه:</b> ${saleObj.method}</p>
+            <hr style="margin:4px 0;">
+            <table style="width:100%; font-size:10px;">
+                <tr><th>جنس</th><th>تعداد</th><th>جمله</th></tr>
+                ${cart.map(i => `<tr><td>${i.name}</td><td>${i.qty}</td><td>${(i.price*i.qty).toFixed(2)}</td></tr>`).join('')}
+            </table>
+            <hr style="margin:4px 0;">
+            <p><b>مجموعه (شامل 15% VAT):</b> ${finalTotal.toFixed(2)} SAR</p>
+        `;
+
+        window.print();
         cart = []; renderCart(); loadReports();
     }
 
@@ -480,6 +511,7 @@
         customers.push({ name, phone: phone || '-', points: 0 });
         localStorage.setItem('pos_customers', JSON.stringify(customers));
         renderCustomers();
+        alert("مشتری ثبت شو!");
     }
 
     function renderCustomers() {
